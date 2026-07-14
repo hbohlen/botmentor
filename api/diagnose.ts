@@ -1,10 +1,139 @@
+import 'dotenv/config';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { diagnose } from './engine';
+import Anthropic from '@anthropic-ai/sdk';
 
-// Vercel serverless function. Self-contained under api/ (Vercel's bundler only traces
-// imports within api/). Shares the exact same engine as the local Express proxy
-// (src/server/index.ts imports ../api/engine), so local dev and the deployed demo never
-// diverge. API keys stay server-side. Vercel maps this file to /api/diagnose.
+// ============================================================================
+// BotMentor serverless function — single self-contained file (Vercel's
+// @vercel/node bundler externalizes relative imports, so everything lives here).
+// Shares logic with the local Express proxy (src/server/index.ts) by copying the
+// engine; keys stay server-side. Maps to route /api/diagnose.
+// ============================================================================
+
+type FaultArea =
+  | 'motor' | 'sensors' | 'power' | 'wiring' | 'programming' | 'mechanical' | 'radio';
+type DTag = 'Delegation' | 'Description' | 'Discernment' | 'Diligence';
+
+interface Hypothesis {
+  area: FaultArea;
+  title: string;
+  plainSteps: string[];
+  confidence: number;
+  verifyFirst: boolean;
+  whyRanked: string;
+}
+interface DiagnoseResult {
+  hypotheses: Hypothesis[];
+  dTags: DTag[];
+  note?: string;
+}
+
+const SYSTEM_PROMPT = `You are BotMentor, a mentor for student robotics teams (middle/high school), in the spirit of the Nebraska Robotics Expo where college engineering students helped young teams troubleshoot and improve their robots. You coach — you do NOT just fix.
+
+Follow the AI Fluency 4D Framework:
+- Delegation: propose the test; the STUDENT runs it. Never claim you ran a physical test.
+- Description: reason from what the student reports; ask for clarification if the report is too thin.
+- Discernment: rank likely causes; mark the cheapest/safest check as verifyFirst; explain why each is ranked where it is.
+- Diligence: include safety notes (batteries, soldering, sharp parts); be honest about low confidence.
+
+Return ONLY JSON matching this shape:
+{"hypotheses":[{"area":<motor|sensors|power|wiring|programming|mechanical|radio>,"title":string,"plainSteps":[string],"confidence":0..1,"verifyFirst":boolean,"whyRanked":string}],"dTags":["Delegation","Description","Discernment","Diligence"],"note":string}`;
+
+function parseDiagnose(raw: string): DiagnoseResult {
+  try {
+    const start = raw.indexOf('{');
+    const end = raw.lastIndexOf('}');
+    if (start === -1 || end === -1 || end <= start) throw new Error('no JSON');
+    const parsed = JSON.parse(raw.slice(start, end + 1)) as Partial<DiagnoseResult>;
+    return {
+      hypotheses: Array.isArray(parsed.hypotheses) ? parsed.hypotheses : [],
+      dTags: Array.isArray(parsed.dTags)
+        ? (parsed.dTags as DTag[])
+        : ['Delegation', 'Description', 'Discernment', 'Diligence'],
+      note: parsed.note,
+    };
+  } catch {
+    return {
+      hypotheses: [],
+      dTags: ['Delegation', 'Description', 'Discernment', 'Diligence'],
+      note: 'The mentor could not parse a structured answer. Try restating the symptom, what changed, and what you expected.',
+    };
+  }
+}
+
+export async function diagnose(input: string): Promise<DiagnoseResult> {
+  const provider = (process.env.PROVIDER ?? 'mock').toLowerCase();
+
+  if (provider === 'anthropic') {
+    const key = process.env.ANTHROPIC_API_KEY;
+    if (!key) throw new Error('ANTHROPIC_API_KEY not set');
+    const client = new Anthropic({ apiKey: key });
+    const msg = await client.messages.create({
+      model: process.env.ANTHROPIC_MODEL ?? 'claude-sonnet-5',
+      max_tokens: 1200,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: input }],
+    });
+    const text = msg.content
+      .filter((b): b is Anthropic.TextBlock => b.type === 'text')
+      .map((b) => b.text)
+      .join('\n');
+    return parseDiagnose(text);
+  }
+
+  if (provider === 'deepseek' || provider === 'openai-compatible') {
+    const key = process.env.DEEPSEEK_API_KEY;
+    if (!key) throw new Error('DEEPSEEK_API_KEY not set');
+    const res = await fetch(`${process.env.DEEPSEEK_BASE_URL ?? 'https://api.deepseek.com'}/v1/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+      body: JSON.stringify({
+        model: process.env.DEEPSEEK_MODEL ?? 'deepseek-v4-flash',
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: input },
+        ],
+        temperature: 0.4,
+      }),
+    });
+    if (!res.ok) throw new Error(`Provider error ${res.status}`);
+    const data = (await res.json()) as { choices: { message: { content: string } }[] };
+    return parseDiagnose(data.choices[0].message.content);
+  }
+
+  // Mock — key-free, clearly labeled.
+  return parseDiagnose(
+    JSON.stringify({
+      hypotheses: [
+        {
+          area: 'power',
+          title: 'Battery sags under load',
+          plainSteps: ['Fully charge the battery, then try again.', 'If it works fresh but fails after a minute, the battery is weak.'],
+          confidence: 0.65,
+          verifyFirst: false,
+          whyRanked: 'Weak batteries cause intermittent "one side dies" and stuttering — the most common expo issue.',
+        },
+        {
+          area: 'wiring',
+          title: 'Loose motor connector',
+          plainSteps: ['Unplug and reseat the motor connector on the motor and the board.', 'Gently tug the wire while powered — if it cuts out, that is the bad connection.'],
+          confidence: 0.55,
+          verifyFirst: true,
+          whyRanked: 'Loose plugs mimic motor failure; check it before swapping parts (cheap, safe, first).',
+        },
+        {
+          area: 'programming',
+          title: 'Motor direction inverted in code',
+          plainSteps: ['Find the line that sets the left motor speed.', 'If it only stutters turning right, try flipping the sign and re-upload.'],
+          confidence: 0.4,
+          verifyFirst: false,
+          whyRanked: 'A sign error produces direction-dependent stutter; worth a quick code check.',
+        },
+      ],
+      note: 'Mock response (no API key). Set PROVIDER=deepseek or anthropic with a key for live mentoring. Have an adult present for any battery work.',
+    })
+  );
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });

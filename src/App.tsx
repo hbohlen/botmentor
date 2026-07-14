@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Intake } from './components/Intake';
 import { Results } from './components/Results';
-import type { DiagnoseResult } from '../api/providers/types';
+import type { DiagnoseResult } from './types';
 
 export function App() {
   const [result, setResult] = useState<DiagnoseResult | null>(null);

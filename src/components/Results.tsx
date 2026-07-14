@@ -1,4 +1,4 @@
-import type { DTag, DiagnoseResult } from '../../api/providers/types';
+import type { DTag, DiagnoseResult } from '../types';
 import { DTagChips } from './DTagChips';
 import { HypothesisCard } from './HypothesisCard';
 
@@ -17,7 +17,7 @@ export function Results({ result }: { result: DiagnoseResult }) {
       )}
       <ol className="hyp-list">
         {result.hypotheses.map((h, i) => (
-          <HypothesisCard key={h.id} hypothesis={h} rank={i + 1} />
+          <HypothesisCard key={i} hypothesis={h} rank={i + 1} />
         ))}
       </ol>
     </section>

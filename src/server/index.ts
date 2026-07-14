@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
-import { diagnose } from '../../api/engine';
+import { diagnose } from '../../api/diagnose';
 
 // Local dev proxy. In production this exact logic runs as a Vercel serverless function
 // (api/diagnose.ts) — see vercel.json. Keys are read server-side only via the shared

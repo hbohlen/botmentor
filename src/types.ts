@@ -1,3 +1,6 @@
+// Shared frontend types for BotMentor. The serverless function (api/diagnose.ts) defines
+// its own identical copies because Vercel's bundler externalizes relative imports inside
+// api/ — keep these shapes in sync with that file's Hypothesis/DiagnoseResult.
 export type FaultArea =
   | 'motor'
   | 'sensors'
@@ -10,12 +13,11 @@ export type FaultArea =
 export type DTag = 'Delegation' | 'Description' | 'Discernment' | 'Diligence';
 
 export interface Hypothesis {
-  id: string;
   area: FaultArea;
   title: string;
   plainSteps: string[];
-  confidence: number; // 0..1
-  verifyFirst: boolean; // Discernment: test this cheap/safe thing before others
+  confidence: number;
+  verifyFirst: boolean;
   whyRanked: string;
 }
 
@@ -23,13 +25,4 @@ export interface DiagnoseResult {
   hypotheses: Hypothesis[];
   dTags: DTag[];
   note?: string;
-}
-
-export interface ModelMessage {
-  role: 'system' | 'user' | 'assistant';
-  content: string;
-}
-
-export interface ModelProvider {
-  diagnose(input: string): Promise<DiagnoseResult>;
 }

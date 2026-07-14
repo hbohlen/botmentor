@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Hypothesis } from '../../api/providers/types';
+import type { Hypothesis } from '../types';
 import { recordFeedback } from '../lib/storage';
 
 // Renders one hypothesis. Carries the Discernment flag (verifyFirst) and the whyRanked
@@ -15,7 +15,7 @@ export function HypothesisCard({
 
   function choose(v: 'yes' | 'no' | 'partial') {
     setFeedback(v);
-    recordFeedback({ hypothesisId: hypothesis.id, area: hypothesis.area, worked: v });
+    recordFeedback({ hypothesisId: `${hypothesis.area}-${rank}`, area: hypothesis.area, worked: v });
   }
 
   const pct = Math.round((hypothesis.confidence ?? 0) * 100);
