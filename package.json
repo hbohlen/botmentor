@@ -1,0 +1,35 @@
+{
+  "name": "botmentor",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Mentor-style robot troubleshooting co-pilot, grounded in the AI Fluency 4D Framework. Claude Corps Fellow portfolio project.",
+  "scripts": {
+    "dev": "concurrently -k -n web,server -c blue,green \"vite\" \"tsx watch src/server/index.ts\"",
+    "dev:web": "vite",
+    "dev:server": "tsx watch src/server/index.ts",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "start": "tsx src/server/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.10.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vercel/node": "^3.2.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.0"
+  }
+}

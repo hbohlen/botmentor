@@ -1,0 +1,62 @@
+:root {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --ink: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+.app { max-width: 760px; margin: 0 auto; padding: 24px; }
+.masthead h1 { margin: 0 0 4px; color: var(--accent); }
+.masthead p { color: var(--muted); margin-top: 0; }
+.intake {
+  display: flex; flex-direction: column; gap: 12px;
+  background: var(--panel); padding: 16px; border-radius: 12px;
+}
+.intake label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.intake textarea, .intake input {
+  padding: 8px; border-radius: 8px; border: 1px solid #334155;
+  background: #0f172a; color: var(--ink); font: inherit;
+}
+button {
+  cursor: pointer; border: none; border-radius: 8px; padding: 8px 14px;
+  background: var(--accent); color: #03283a; font-weight: 600;
+}
+button:disabled { opacity: 0.6; cursor: default; }
+.error { color: #f87171; }
+.results { margin-top: 20px; }
+.results-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.dtags { display: flex; gap: 6px; flex-wrap: wrap; }
+.dtag {
+  color: #fff; font-size: 12px; font-weight: 600; padding: 3px 8px;
+  border-radius: 999px;
+}
+.note {
+  background: #172554; border-left: 3px solid var(--accent);
+  padding: 8px 12px; border-radius: 6px; color: var(--muted);
+}
+.hyp-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.hyp {
+  background: var(--panel); padding: 14px; border-radius: 12px;
+  border: 1px solid #334155;
+}
+.hyp-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.rank { color: var(--accent); font-weight: 700; }
+.area {
+  font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em;
+  background: #334155; padding: 2px 6px; border-radius: 6px; color: var(--muted);
+}
+.title { font-weight: 600; }
+.conf { margin-left: auto; color: var(--muted); font-size: 13px; }
+.verify { color: #fbbf24; font-size: 14px; margin: 8px 0; }
+.steps { margin: 8px 0; padding-left: 20px; }
+.why summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+.feedback { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 14px; }
+.feedback button { background: #334155; color: var(--ink); font-weight: 500; padding: 4px 10px; }
+.feedback button.active { background: var(--accent); color: #03283a; }
