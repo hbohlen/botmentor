@@ -1,4 +1,4 @@
-import type { DTag } from '../server/providers/types';
+import type { DTag } from '../../api/providers/types';
 
 const COLORS: Record<DTag, string> = {
   Delegation: '#2563eb',

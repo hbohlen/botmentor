@@ -1,10 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { diagnose } from '../src/lib/engine';
+import { diagnose } from './engine';
 
-// Vercel serverless function. Shares the exact same provider logic as the local
-// Express proxy (src/server/index.ts) via the shared engine module, so local dev
-// and the deployed demo never diverge. API keys stay server-side.
-// Vercel maps this file to the route /api/diagnose automatically.
+// Vercel serverless function. Self-contained under api/ (Vercel's bundler only traces
+// imports within api/). Shares the exact same engine as the local Express proxy
+// (src/server/index.ts imports ../api/engine), so local dev and the deployed demo never
+// diverge. API keys stay server-side. Vercel maps this file to /api/diagnose.
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });

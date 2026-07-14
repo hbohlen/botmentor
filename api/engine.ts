@@ -1,12 +1,12 @@
 import 'dotenv/config';
-import type { ModelProvider, DiagnoseResult } from '../server/providers/types';
-import { MockProvider } from '../server/providers/mock';
-import { AnthropicProvider } from '../server/providers/anthropic';
-import { OpenAICompatibleProvider } from '../server/providers/openai-compatible';
+import type { ModelProvider, DiagnoseResult } from './providers/types';
+import { MockProvider } from './providers/mock';
+import { AnthropicProvider } from './providers/anthropic';
+import { OpenAICompatibleProvider } from './providers/openai-compatible';
 
-// Shared between the local Express proxy (src/server/index.ts) and the Vercel
-// serverless function (api/diagnose.ts). Builds the provider from env. The browser
-// never receives a key — this is the only place keys are read.
+// Serverless-safe engine: everything it imports lives under ./ (api/), so Vercel's
+// @vercel/node bundler traces it correctly. The local Express proxy (src/server/index.ts)
+// imports this same module, so there is a single source of truth. Keys are read here only.
 // Provider: mock (no key, for demo/dev) | deepseek (cheap test) | anthropic (prod).
 export function getProvider(): ModelProvider {
   const provider = (process.env.PROVIDER ?? 'mock').toLowerCase();

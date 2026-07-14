@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Hypothesis } from '../server/providers/types';
+import type { Hypothesis } from '../../api/providers/types';
 import { recordFeedback } from '../lib/storage';
 
 // Renders one hypothesis. Carries the Discernment flag (verifyFirst) and the whyRanked

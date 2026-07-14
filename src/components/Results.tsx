@@ -1,4 +1,4 @@
-import type { DTag, DiagnoseResult } from '../server/providers/types';
+import type { DTag, DiagnoseResult } from '../../api/providers/types';
 import { DTagChips } from './DTagChips';
 import { HypothesisCard } from './HypothesisCard';
 

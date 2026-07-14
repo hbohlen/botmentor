@@ -15,14 +15,14 @@ export interface Hypothesis {
   title: string;
   plainSteps: string[];
   confidence: number; // 0..1
-  verifyFirst: boolean; // Discernment flag
-  whyRanked: string; // teaches Discernment
+  verifyFirst: boolean; // Discernment: test this cheap/safe thing before others
+  whyRanked: string;
 }
 
 export interface DiagnoseResult {
   hypotheses: Hypothesis[];
-  dTags: DTag[]; // which 4D skills this response demonstrates
-  note?: string; // mentor framing / safety note
+  dTags: DTag[];
+  note?: string;
 }
 
 export interface ModelMessage {
@@ -31,16 +31,5 @@ export interface ModelMessage {
 }
 
 export interface ModelProvider {
-  name: 'mock' | 'anthropic' | 'openai-compatible';
-  diagnose(userInput: string): Promise<DiagnoseResult>;
+  diagnose(input: string): Promise<DiagnoseResult>;
 }
-
-export const FAULT_AREAS: FaultArea[] = [
-  'motor',
-  'sensors',
-  'power',
-  'wiring',
-  'programming',
-  'mechanical',
-  'radio',
-];
