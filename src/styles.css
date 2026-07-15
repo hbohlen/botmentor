@@ -167,3 +167,18 @@ button:disabled { opacity: 0.6; cursor: default; }
 .handoff p { color: var(--muted); font-size: 13px; line-height: 1.45; margin: 8px 0; }
 .handoff-copy { background: #7dd3fc; color: #03283a; }
 .handoff-status { min-height: 19px; }
+.impact { margin-top: 20px; }
+.impact-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.impact h2 { margin: 2px 0 0; }
+.eyebrow { color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: 0.06em; margin: 0; text-transform: uppercase; }
+.impact-local { background: #052e16; border: 1px solid #166534; border-radius: 999px; color: #86efac; font-size: 12px; font-weight: 600; padding: 4px 8px; white-space: nowrap; }
+.impact-intro { color: var(--muted); font-size: 14px; line-height: 1.5; }
+.impact-grid { display: grid; gap: 10px; grid-template-columns: 1fr; margin-top: 14px; }
+.metric { background: var(--panel); border: 1px solid #334155; border-radius: 12px; display: flex; flex-direction: column; gap: 4px; padding: 14px; }
+.metric span { color: var(--muted); font-size: 13px; }
+.metric strong { color: var(--accent); font-size: 24px; }
+.metric small { color: var(--muted); font-size: 12px; }
+.impact-privacy { background: #0b1220; border: 1px solid #1e3a5e; border-radius: 10px; margin-top: 14px; padding: 10px 12px; }
+.impact-privacy strong { color: #7dd3fc; font-size: 13px; }
+.impact-privacy p { color: var(--muted); font-size: 13px; line-height: 1.45; margin: 5px 0 0; }
+@media (min-width: 560px) { .impact-grid { grid-template-columns: 1fr 1fr; } }

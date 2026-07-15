@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { Hypothesis } from '../types';
 import { buildHandoffBrief } from '../lib/handoff';
+import { recordHandoff } from '../lib/storage';
 
 interface Props {
   intake: string;
@@ -33,6 +34,7 @@ export function HandoffCard({ intake, hypotheses, checklists }: Props) {
   async function copyBrief() {
     try {
       await navigator.clipboard.writeText(brief);
+      recordHandoff();
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2200);
     } catch {

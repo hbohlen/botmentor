@@ -5,9 +5,10 @@ import { HealthPill } from './components/HealthPill';
 import { DTagLegend } from './components/DTagLegend';
 import { RefLibrary } from './components/RefLibrary';
 import { TeamSelector } from './components/TeamSelector';
+import { ImpactPanel } from './components/ImpactPanel';
 import type { DiagnoseResult } from './types';
 
-type Tab = 'diagnose' | 'references';
+type Tab = 'diagnose' | 'references' | 'impact';
 
 export function App() {
   const [tab, setTab] = useState<Tab>('diagnose');
@@ -61,6 +62,9 @@ export function App() {
           >
             📚 References
           </button>
+          <button className={tab === 'impact' ? 'tab active' : 'tab'} onClick={() => setTab('impact')}>
+            📈 Impact
+          </button>
         </nav>
         <TeamSelector />
       </header>
@@ -71,8 +75,10 @@ export function App() {
           {error && <p className="error">⚠ {error}</p>}
           {result && <Results result={result} intake={lastIntake} />}
         </>
-      ) : (
+      ) : tab === 'references' ? (
         <RefLibrary />
+      ) : (
+        <ImpactPanel />
       )}
 
       <DTagLegend />

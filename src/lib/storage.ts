@@ -7,6 +7,7 @@ export interface FeedbackEntry {
 
 const FEEDBACK_KEY = 'botmentor:feedback';
 const CHECK_KEY = 'botmentor:checklist';
+const HANDOFF_KEY = 'botmentor:handoffs';
 
 // MVP persistence (Q5 resolved: localStorage). Local only; survives reload. Upgrade path:
 // SQLite/file later so the feedback loop survives browser clears.
@@ -51,5 +52,32 @@ export function setChecklist(id: string, state: boolean[]) {
     localStorage.setItem(CHECK_KEY, JSON.stringify(map));
   } catch {
     /* ignore */
+  }
+}
+
+export function getAllChecklists(): Record<string, boolean[]> {
+  try {
+    const raw = localStorage.getItem(CHECK_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, boolean[]>) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function recordHandoff() {
+  try {
+    const current = Number(localStorage.getItem(HANDOFF_KEY) ?? '0');
+    localStorage.setItem(HANDOFF_KEY, String(Number.isFinite(current) ? current + 1 : 1));
+  } catch {
+    /* ignore */
+  }
+}
+
+export function getHandoffs(): number {
+  try {
+    const count = Number(localStorage.getItem(HANDOFF_KEY) ?? '0');
+    return Number.isFinite(count) && count > 0 ? count : 0;
+  } catch {
+    return 0;
   }
 }
