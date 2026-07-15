@@ -20,6 +20,13 @@ body {
 .pill--ok { background: #052e16; color: #4ade80; border: 1px solid #166534; }
 .pill--bad { background: #450a0a; color: #f87171; border: 1px solid #991b1b; }
 .pill--unknown { background: #1e293b; color: var(--muted); border: 1px solid #334155; }
+.desc-meter { background: #0b1220; border: 1px solid #1e3a5e; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; }
+.desc-meter-head { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; color: var(--muted); }
+.desc-label { font-weight: 700; }
+.desc-bar { height: 8px; background: #1e293b; border-radius: 999px; overflow: hidden; margin: 6px 0; }
+.desc-fill { height: 100%; transition: width 0.2s ease, background 0.2s ease; }
+.desc-tips { margin: 6px 0 0; padding-left: 18px; font-size: 12px; color: var(--muted); }
+.desc-tips li { margin: 2px 0; }
 .intake {
   display: flex; flex-direction: column; gap: 12px;
   background: var(--panel); padding: 16px; border-radius: 12px;

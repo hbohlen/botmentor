@@ -17,6 +17,11 @@ causes" vs "✋ You run the tests," with a progress bar of the hands-on steps th
 has ticked off. That is the whole point in one glance — the tool never touches the robot;
 the student does, and the mentoring happens in that doing.
 
+**It also coaches Description live.** As a student types their problem, a small "Description
+quality" meter fills in and lists one or two concrete tips ("name the part or behavior,"
+"add what changed since it last worked"). The better they describe it, the better the
+mentor ideas get — and that is a skill they take to the real expo floor.
+
 ## Why it's built this way (the "4D" idea)
 The tool follows a simple four-part coaching method. You'll see these words in the app:
 - **Delegation** — the tool suggests the test; the *student* does it. The tool never claims

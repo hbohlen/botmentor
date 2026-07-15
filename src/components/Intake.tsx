@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { DescriptionMeter } from './DescriptionMeter';
 
 interface IntakeProps {
   onSubmit: (input: string) => void;
@@ -6,6 +7,7 @@ interface IntakeProps {
 }
 
 // Coaches Description (4D): structured prompts help the student describe the problem well.
+// The live DescriptionMeter gives real-time feedback as they type.
 export function Intake({ onSubmit, loading }: IntakeProps) {
   const [symptom, setSymptom] = useState('');
   const [changed, setChanged] = useState('');
@@ -25,6 +27,7 @@ export function Intake({ onSubmit, loading }: IntakeProps) {
 
   return (
     <form className="intake" onSubmit={submit}>
+      <DescriptionMeter symptom={symptom} changed={changed} expected={expected} />
       <label>
         What is your robot doing? (symptom)
         <textarea

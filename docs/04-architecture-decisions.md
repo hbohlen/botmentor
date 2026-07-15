@@ -46,6 +46,16 @@ contract, and the serverless function stays self-contained (ADR-001).
 **Consequence.** A host-org lead can *see* the AI-vs-student boundary without
 an engineer; student progress now survives reload. The mentoring loop is legible.
 
+## ADR-008: Description quality meter is UI-only, client-computed
+**Decision.** The intake `DescriptionMeter` scores the student's draft in the browser
+from the field text alone (length + symptom vocabulary + the two optional fields).
+No network, no backend, no `DiagnoseResult` change.
+**Context.** The Skilljar AI Fluency framing names the "description↔discernment
+loop" — good Description upstream is what makes Discernment downstream sound. Making
+it a *live* coaching signal turns the static intake into real-time Description practice.
+**Consequence.** Zero cost, works in `mock` mode (no key), and invisible to the
+eval contract (which only inspects diagnose output). Keeps the function self-contained.
+
 ## ADR-006: Production `/api/health` parity + keyless eval harness
 **Decision.** A real `api/health.ts` serverless function mirrors the local proxy's
 `/api/health` shape (provider, keyConfigured, domains, framework, dTags). A separate
