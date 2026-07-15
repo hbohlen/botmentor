@@ -159,3 +159,11 @@ button:disabled { opacity: 0.6; cursor: default; }
 .team-select label { color: var(--muted); }
 .team-select select { background: var(--panel); color: var(--ink); border: 1px solid #334155; border-radius: 8px; padding: 4px 8px; font-size: 13px; }
 .team-hint { color: var(--muted); font-size: 12px; }
+.safety-banner { background: #1a1206; border: 1px solid #5a4a16; border-left: 4px solid #fbbf24; border-radius: 10px; padding: 10px 12px; margin-bottom: 14px; }
+.safety-banner strong { color: #fde68a; font-size: 14px; }
+.safety-banner p { color: var(--ink); font-size: 13px; line-height: 1.45; margin: 5px 0 0; }
+.handoff { background: #10243a; border: 1px solid #1e5c84; border-radius: 12px; padding: 10px 14px; margin-top: 16px; }
+.handoff summary { cursor: pointer; color: #7dd3fc; font-weight: 700; }
+.handoff p { color: var(--muted); font-size: 13px; line-height: 1.45; margin: 8px 0; }
+.handoff-copy { background: #7dd3fc; color: #03283a; }
+.handoff-status { min-height: 19px; }

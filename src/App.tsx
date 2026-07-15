@@ -12,6 +12,7 @@ type Tab = 'diagnose' | 'references';
 export function App() {
   const [tab, setTab] = useState<Tab>('diagnose');
   const [result, setResult] = useState<DiagnoseResult | null>(null);
+  const [lastIntake, setLastIntake] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,6 +28,7 @@ export function App() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Request failed');
       setResult(data as DiagnoseResult);
+      setLastIntake(input);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Request failed');
     } finally {
@@ -67,7 +69,7 @@ export function App() {
         <>
           <Intake onSubmit={diagnose} loading={loading} />
           {error && <p className="error">⚠ {error}</p>}
-          {result && <Results result={result} />}
+          {result && <Results result={result} intake={lastIntake} />}
         </>
       ) : (
         <RefLibrary />

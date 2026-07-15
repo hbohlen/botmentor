@@ -5,9 +5,11 @@ import { HypothesisCard } from './HypothesisCard';
 import { DelegationPanel } from './DelegationPanel';
 import { FixesLog } from './FixesLog';
 import { RefDrawer, type RefProvenance } from './RefDrawer';
+import { HandoffCard } from './HandoffCard';
+import { SafetyBanner } from './SafetyBanner';
 import { getChecklist, setChecklist } from '../lib/storage';
 
-export function Results({ result }: { result: DiagnoseResult }) {
+export function Results({ result, intake }: { result: DiagnoseResult; intake: string }) {
   const [checklists, setChecklists] = useState<Record<string, boolean[]>>(() => {
     const init: Record<string, boolean[]> = {};
     result.hypotheses.forEach((h, i) => {
@@ -43,6 +45,7 @@ export function Results({ result }: { result: DiagnoseResult }) {
 
   return (
     <section className="results">
+      <SafetyBanner />
       <DelegationPanel total={total} done={done} />
       <div className="results-head">
         <h2>Mentor ideas</h2>
@@ -69,6 +72,7 @@ export function Results({ result }: { result: DiagnoseResult }) {
           );
         })}
       </ol>
+      <HandoffCard intake={intake} hypotheses={result.hypotheses} checklists={checklists} />
       <FixesLog />
       <RefDrawer refId={openRef} provenance={openProv} onClose={() => setOpenRef(null)} />
     </section>
