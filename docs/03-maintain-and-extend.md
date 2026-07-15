@@ -10,6 +10,17 @@ back a ranked list of likely causes plus safe steps to try — coached in the AI
 4D Framework (Delegation, Description, Discernment, Diligence). It does not fix the robot;
 it helps the student think like a mentor.
 
+**What's shipped (as of 2026-07-15).** All four 4D competencies have a dedicated,
+visually-interactive component — each UI-only and keyless so it works in `mock` mode and
+the quality gate (`npm run eval`, 15/15) stays intact:
+- **Delegation** — split panel ("🤖 Claude works out the causes" vs "✋ You run the tests")
+  + tappable student action checklist with a hands-on progress bar (ADR-007).
+- **Description** — live quality meter + coaching tips as the student types (ADR-008).
+- **Discernment** — confidence bar + "🔍 Challenge the mentor" self-critique panel
+  (confirm/disprove/alt-cause + a question to take to a human mentor) (ADR-009).
+- **Diligence** — visible "Your fixes" log (per-area success bars over logged marks)
+  + an adaptive nudge at intake (ADR-010).
+
 **What it costs.** Hosting is free on Vercel's hobby tier. If the demo uses real AI answers
 (`PROVIDER=deepseek`), each conversation costs a fraction of a cent; budget ~$5–10/month.
 If it uses the built-in `mock` mode, it costs nothing.
@@ -50,7 +61,11 @@ relative imports. Vercel's bundler drops them (Runbook R5). If you need shared c
    **no API key and no network**, so a volunteer can guard quality in CI. Details in
    `docs/05-eval-harness.md`. If you later add a live-provider regression set, keep it
    separate (it costs money) and gate it behind a flag.
-4. **Multi-language UI** for non-English robotics clubs. The UI strings are in `src/components/*`.
+4. **4D interactive components** — the four coaching competencies each have a UI-only
+   panel/component (see ADR-007/008/009/010). To extend one, edit the matching
+   `src/components/*` file; to add a new one, follow the same pattern: client-derived,
+   no backend change, no `DiagnoseResult` contract change, mock-mode safe.
+5. **Multi-language UI** for non-English robotics clubs. The UI strings are in `src/components/*`.
 
 ## Bus-factor mitigation (this is the point)
 - Runbooks (R1–R7) mean operations don't depend on one person's memory.
