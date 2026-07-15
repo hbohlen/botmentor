@@ -62,14 +62,32 @@ No commit or deployment was made during this iteration. Do not claim live Vercel
 
 ## Next implementation step — WM-11
 
-Build and integrate a focused `NextSafeTest` / prediction-capture panel.
+WM-11 is now implemented locally as part of the middle-school student-flow redesign. The student-facing path foregrounds one safe action, optional prediction, result capture, and mentor escalation; it does not infer confirmation from completion.
 
-1. Select **one** safe next action from the leading hypothesis rather than foregrounding a long checklist.
-2. Let the learner optionally state a prediction.
-3. Record `completed`, `not-safe`, or `need-help`, plus an optional result, through `recordTest`.
-4. Treat `not-safe` and `need-help` as mentor escalation; do not expose an independent-completion action for adult-present or mentor-required tests.
-5. Do not infer a confirmed diagnosis merely because a test was completed.
-6. Add a RED contract test before production logic, then run the complete quality gate.
+## Middle-school student-flow redesign
+
+Implemented locally on 2026-07-15:
+
+- Reframed the primary persona as a middle-school robotics student working pit-side under time pressure.
+- Reorganized the main experience into five visible stages: find the problem area, tell what happened, choose a safe check, record the result, and choose the next step.
+- Replaced simultaneous follow-up fieldsets with one observation question at a time, preserving “I’m not sure” and free-text paths.
+- Added a student-friendly visual robot picker with plain-language labels plus supporting technical vocabulary.
+- Moved investigation layers, full hypothesis reasoning, confidence, 4D framing, impact, team selection, and project context behind progressive disclosure or the mentor area.
+- Added `NextSafeTest` with optional prediction, result capture, local `TestRecordEntry` persistence, and successful mentor escalation for unsafe/help outcomes.
+- Shifted the visual language from a dense developer dashboard to a responsive educational workspace with larger touch targets, visible focus states, lighter contrast, and mobile-first controls.
+- Added deterministic `evals/student-experience.ts` coverage for one-question progression, five-stage progress, safe-action selection, and unsafe escalation.
+
+Verification after this redesign:
+
+```text
+npm run typecheck  # passed
+npm run eval       # 44/44 core + 9/9 workspace + 4/4 student experience
+npm run build      # passed
+git diff --check   # passed
+local Vite HTML/App module smoke on 127.0.0.1:5173 # passed
+```
+
+No commit or deployment was made. The unrelated untracked resume files in `docs/` were left untouched.
 
 ## Follow-on sequence
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Intake } from './components/Intake';
 import { SymptomRefiner } from './components/SymptomRefiner';
 import { RobotSystemMap } from './components/RobotSystemMap';
+import { StudentProgress } from './components/StudentProgress';
 import {
   DEFAULT_MAP_STATE,
   deriveSystemStatuses,
@@ -14,14 +15,13 @@ import {
   type RobotSystem,
 } from './lib/robot-workspace';
 import { Results } from './components/Results';
-import { HealthPill } from './components/HealthPill';
 import { DTagLegend } from './components/DTagLegend';
 import { RefLibrary } from './components/RefLibrary';
 import { TeamSelector } from './components/TeamSelector';
 import { ImpactPanel } from './components/ImpactPanel';
 import type { DiagnoseResult } from './types';
 
-type Tab = 'diagnose' | 'references' | 'impact';
+type Tab = 'diagnose' | 'learn' | 'mentor';
 
 export function App() {
   const [tab, setTab] = useState<Tab>('diagnose');
@@ -51,11 +51,21 @@ export function App() {
 
   function selectSystem(selectedSystem: RobotSystem) {
     setMapState((current) => ({ ...current, selectedSystem }));
-    setShowTextIntake(true);
+    setShowTextIntake(false);
   }
 
   function selectLayer(layer: MapLayer) {
     setMapState((current) => ({ ...current, layer }));
+  }
+
+  function startOver() {
+    setResult(null);
+    setLastIntake('');
+    setError(null);
+    setShowTextIntake(false);
+    setMapState((current) => ({ ...current, selectedSystem: undefined, layer: 'issue' }));
+    setTab('diagnose');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async function diagnose(input: string | BuiltInvestigationContext) {
@@ -68,17 +78,26 @@ export function App() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/diagnose', {
+      const response = await fetch('/api/diagnose', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(context ? { input: investigationInput, context: { selectedSystem: context.selectedSystem, symptomLabel: context.symptomLabel, observations: context.observations, freeText: context.freeText } } : { input: investigationInput }),
+        body: JSON.stringify(context ? {
+          input: investigationInput,
+          context: {
+            selectedSystem: context.selectedSystem,
+            symptomLabel: context.symptomLabel,
+            observations: context.observations,
+            freeText: context.freeText,
+          },
+        } : { input: investigationInput }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? 'Request failed');
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error ?? 'Request failed');
       setResult(data as DiagnoseResult);
       setLastIntake(investigationInput);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Request failed');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Request failed');
     } finally {
       setLoading(false);
     }
@@ -88,69 +107,69 @@ export function App() {
     <main className="app">
       <header className="masthead">
         <div className="masthead-row">
-          <h1>BotMentor</h1>
-          <HealthPill />
+          <div>
+            <h1>BotMentor</h1>
+            <p className="tagline">Robot troubleshooting, one safe step at a time.</p>
+          </div>
+          {(result || mapState.selectedSystem || showTextIntake) && (
+            <button type="button" className="start-over" onClick={startOver}>Start over</button>
+          )}
         </div>
-        <p>
-          A mentoring co-pilot for student robotics teams — built on the AI Fluency 4D
-          Framework. Rooted in the Nebraska Robotics Expo, where college engineering
-          students coached K–12 teams through troubleshooting and robot-design improvement.
-        </p>
-        <nav className="tabs">
-          <button
-            className={tab === 'diagnose' ? 'tab active' : 'tab'}
-            onClick={() => setTab('diagnose')}
-          >
-            Diagnose
-          </button>
-          <button
-            className={tab === 'references' ? 'tab active' : 'tab'}
-            onClick={() => setTab('references')}
-          >
-            📚 References
-          </button>
-          <button className={tab === 'impact' ? 'tab active' : 'tab'} onClick={() => setTab('impact')}>
-            📈 Impact
-          </button>
+        <nav className="tabs" aria-label="BotMentor sections">
+          <button aria-current={tab === 'diagnose' ? 'page' : undefined} className={tab === 'diagnose' ? 'tab active' : 'tab'} onClick={() => setTab('diagnose')}>Fix a robot problem</button>
+          <button aria-current={tab === 'learn' ? 'page' : undefined} className={tab === 'learn' ? 'tab active' : 'tab'} onClick={() => setTab('learn')}>Learn</button>
+          <button aria-current={tab === 'mentor' ? 'page' : undefined} className={tab === 'mentor' ? 'tab active' : 'tab'} onClick={() => setTab('mentor')}>For mentors</button>
         </nav>
-        <TeamSelector />
       </header>
 
       {tab === 'diagnose' ? (
         <>
-          <RobotSystemMap
-            selectedSystem={mapState.selectedSystem}
-            statuses={systemStatuses}
-            layer={mapState.layer}
-            onSelectSystem={selectSystem}
-            onSelectLayer={selectLayer}
-          />
-          {showTextIntake ? (
-            <section className="map-intake" aria-labelledby="map-intake-title">
-              <h2 id="map-intake-title">
-                {mapState.selectedSystem ? 'Tell me what you noticed' : 'Describe the problem'}
-              </h2>
-              {mapState.selectedSystem ? (
-                <SymptomRefiner system={mapState.selectedSystem} loading={loading} onSubmit={diagnose} />
-              ) : (
-                <Intake onSubmit={diagnose} loading={loading} />
-              )}
+          {result ? (
+            <Results result={result} intake={lastIntake} />
+          ) : mapState.selectedSystem ? (
+            <SymptomRefiner
+              key={mapState.selectedSystem}
+              system={mapState.selectedSystem}
+              loading={loading}
+              onBack={() => setMapState((current) => ({ ...current, selectedSystem: undefined }))}
+              onSubmit={diagnose}
+            />
+          ) : showTextIntake ? (
+            <section className="guided-card" aria-labelledby="text-intake-title">
+              <StudentProgress stage="describe-problem" />
+              <p className="eyebrow">Use your own words</p>
+              <h2 id="text-intake-title">What did you expect, and what happened instead?</h2>
+              <Intake onSubmit={diagnose} loading={loading} />
+              <button type="button" className="back-action" onClick={() => setShowTextIntake(false)}>← Back to robot areas</button>
             </section>
           ) : (
-            <button type="button" className="text-intake-toggle" onClick={() => setShowTextIntake(true)}>
-              Describe it another way
-            </button>
+            <>
+              <RobotSystemMap
+                selectedSystem={mapState.selectedSystem}
+                statuses={systemStatuses}
+                layer={mapState.layer}
+                onSelectSystem={selectSystem}
+                onSelectLayer={selectLayer}
+              />
+              <button type="button" className="text-intake-toggle" onClick={() => setShowTextIntake(true)}>I’d rather describe it in my own words</button>
+            </>
           )}
-          {error && <p className="error">⚠ {error}</p>}
-          {result && <Results result={result} intake={lastIntake} />}
+          {error && <p className="error" role="alert">We couldn’t get mentor ideas yet: {error}</p>}
         </>
-      ) : tab === 'references' ? (
+      ) : tab === 'learn' ? (
         <RefLibrary />
       ) : (
-        <ImpactPanel />
+        <section className="mentor-center">
+          <p className="eyebrow">For coaches, volunteers, and reviewers</p>
+          <h2>Mentor & project center</h2>
+          <p>
+            BotMentor helps students observe, test safely, and prepare a better question for a human mentor. It does not see, control, or repair a physical robot.
+          </p>
+          <TeamSelector />
+          <ImpactPanel />
+          <DTagLegend />
+        </section>
       )}
-
-      <DTagLegend />
     </main>
   );
 }

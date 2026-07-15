@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { DiagnoseResult } from '../types';
 import { DTagChips } from './DTagChips';
 import { HypothesisCard } from './HypothesisCard';
@@ -7,72 +7,87 @@ import { FixesLog } from './FixesLog';
 import { RefDrawer, type RefProvenance } from './RefDrawer';
 import { HandoffCard } from './HandoffCard';
 import { SafetyBanner } from './SafetyBanner';
-import { getChecklist, setChecklist } from '../lib/storage';
+import { NextSafeTest } from './NextSafeTest';
+import { getChecklist, getTestRecords, scopedChecklistId, setChecklist } from '../lib/storage';
 
 export function Results({ result, intake }: { result: DiagnoseResult; intake: string }) {
+  const [investigationId] = useState(() => globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`);
   const [checklists, setChecklists] = useState<Record<string, boolean[]>>(() => {
     const init: Record<string, boolean[]> = {};
-    result.hypotheses.forEach((h, i) => {
-      const id = `${h.area}-${i + 1}`;
-      const saved = getChecklist(id);
-      init[id] =
-        saved && saved.length === h.plainSteps.length ? saved : h.plainSteps.map(() => false);
+    result.hypotheses.forEach((hypothesis, index) => {
+      const id = `${hypothesis.area}-${index + 1}`;
+      const saved = getChecklist(scopedChecklistId(investigationId, id));
+      init[id] = saved && saved.length === hypothesis.plainSteps.length ? saved : hypothesis.plainSteps.map(() => false);
     });
     return init;
   });
   const [openRef, setOpenRef] = useState<string | null>(null);
   const [openProv, setOpenProv] = useState<RefProvenance | null>(null);
+  const [testRecords, setTestRecords] = useState(() => getTestRecords(investigationId));
+  const pitReportRef = useRef<HTMLDivElement>(null);
 
-  function openRefWith(id: string, prov: RefProvenance) {
+  function openRefWith(id: string, provenance: RefProvenance) {
     setOpenRef(id);
-    setOpenProv(prov);
+    setOpenProv(provenance);
   }
 
-  // Persist every checklist change (single source of truth for storage).
   useEffect(() => {
-    Object.entries(checklists).forEach(([id, arr]) => setChecklist(id, arr));
-  }, [checklists]);
+    Object.entries(checklists).forEach(([id, checklist]) => setChecklist(scopedChecklistId(investigationId, id), checklist));
+  }, [checklists, investigationId]);
 
-  const total = result.hypotheses.reduce((n, h) => n + h.plainSteps.length, 0);
-  const done = Object.values(checklists).reduce(
-    (n, arr) => n + arr.filter(Boolean).length,
-    0
-  );
+  const total = result.hypotheses.reduce((count, hypothesis) => count + hypothesis.plainSteps.length, 0);
+  const done = Object.values(checklists).reduce((count, checklist) => count + checklist.filter(Boolean).length, 0);
 
-  function onChecklist(id: string, next: boolean[]) {
-    setChecklists((prev) => ({ ...prev, [id]: next }));
+  function showPitReport() {
+    pitReportRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const details = pitReportRef.current?.querySelector('details');
+    if (details) details.open = true;
   }
 
   return (
-    <section className="results">
+    <section className="results" aria-label="Your troubleshooting path">
       <SafetyBanner />
-      <DelegationPanel total={total} done={done} />
-      <div className="results-head">
-        <h2>Mentor ideas</h2>
-        <DTagChips tags={result.dTags} />
-      </div>
-      {result.note && <p className="note">💡 {result.note}</p>}
-      {result.hypotheses.length === 0 && (
-        <p className="empty">
-          No confident hypotheses — try adding what changed and what you expected.
-        </p>
+      {result.note && <p className="note">{result.note}</p>}
+      {result.hypotheses.length === 0 ? (
+        <section className="next-test mentor-stop">
+          <h2>Let’s ask a mentor</h2>
+          <p>BotMentor does not have a safe suggestion yet. Your observations are still useful.</p>
+          <button type="button" onClick={showPitReport}>Show my Pit Report</button>
+        </section>
+      ) : (
+        <NextSafeTest hypotheses={result.hypotheses} investigationId={investigationId} onRecord={() => setTestRecords(getTestRecords(investigationId))} onShowPitReport={showPitReport} />
       )}
-      <ol className="hyp-list">
-        {result.hypotheses.map((h, i) => {
-          const id = `${h.area}-${i + 1}`;
-          return (
-            <HypothesisCard
-              key={i}
-              hypothesis={h}
-              rank={i + 1}
-              checklist={checklists[id]}
-              onChecklist={(next) => onChecklist(id, next)}
-              onOpenRef={openRefWith}
-            />
-          );
-        })}
-      </ol>
-      <HandoffCard intake={intake} hypotheses={result.hypotheses} checklists={checklists} />
+
+      <details className="possible-causes">
+        <summary>Why this step? See possible causes</summary>
+        <div className="results-head">
+          <div>
+            <p className="eyebrow">Suggestions, not confirmed facts</p>
+            <h2>Things that might be happening</h2>
+          </div>
+          <DTagChips tags={result.dTags} />
+        </div>
+        <DelegationPanel total={total} done={done} />
+        <ol className="hyp-list">
+          {result.hypotheses.map((hypothesis, index) => {
+            const id = `${hypothesis.area}-${index + 1}`;
+            return (
+              <HypothesisCard
+                key={id}
+                hypothesis={hypothesis}
+                rank={index + 1}
+                checklist={checklists[id]}
+                onChecklist={(next) => setChecklists((previous) => ({ ...previous, [id]: next }))}
+                onOpenRef={openRefWith}
+              />
+            );
+          })}
+        </ol>
+      </details>
+
+      <div ref={pitReportRef} className="pit-report-anchor">
+        <HandoffCard intake={intake} hypotheses={result.hypotheses} checklists={checklists} testRecords={testRecords} />
+      </div>
       <FixesLog />
       <RefDrawer refId={openRef} provenance={openProv} onClose={() => setOpenRef(null)} />
     </section>

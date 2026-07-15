@@ -68,7 +68,17 @@ function assertContract(fixture: EvalFixture, result: DiagnoseResult): Check[] {
       : err(`missing required 4D tags; got [${result.dTags?.join(', ') ?? ''}]`)
   );
 
-  // 5. mock attaches area-matched reference IDs (Cited-References, ADR-011)
+  // 5. every action carries an explicit safety classification.
+  const badSafety = result.hypotheses.find(
+    (h) => !['safe', 'adult-present', 'mentor-required'].includes(h.safetyLevel)
+  );
+  checks.push(
+    badSafety
+      ? err(`hypothesis safety level missing or invalid: ${JSON.stringify(badSafety.safetyLevel)}`)
+      : { fixture: fixture.name, ok: true, detail: 'all hypotheses have explicit safety levels' }
+  );
+
+  // 6. mock attaches area-matched reference IDs (Cited-References, ADR-011)
   const refH = result.hypotheses.find(
     (h) => Array.isArray(h.refs) && h.refs.length > 0
   );

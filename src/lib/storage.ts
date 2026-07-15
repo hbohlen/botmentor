@@ -6,6 +6,7 @@ export interface FeedbackEntry {
 }
 
 export interface TestRecordEntry {
+  investigationId: string;
   hypothesisId: string;
   step: string;
   prediction?: string;
@@ -26,8 +27,17 @@ export function recordTest(entry: Omit<TestRecordEntry, 'ts'>) {
   } catch { /* local-only best effort */ }
 }
 
-export function getTestRecords(): TestRecordEntry[] {
-  try { return JSON.parse(localStorage.getItem(TEST_KEY) ?? '[]') as TestRecordEntry[]; } catch { return []; }
+export function filterTestRecords(records: TestRecordEntry[], investigationId: string): TestRecordEntry[] {
+  return records.filter((record) => record.investigationId === investigationId);
+}
+
+export function getTestRecords(investigationId: string): TestRecordEntry[] {
+  try {
+    const records = JSON.parse(localStorage.getItem(TEST_KEY) ?? '[]') as TestRecordEntry[];
+    return filterTestRecords(records, investigationId);
+  } catch {
+    return [];
+  }
 }
 
 
@@ -57,7 +67,11 @@ export function getFeedback(): FeedbackEntry[] {
 }
 
 // Delegation split: which hands-on test steps (plainSteps) the student has ticked off.
-// Persisted per hypothesis so the mentoring progress survives reload. See ADR-007.
+// Scoped per investigation so shared browsers never mix students' evidence.
+export function scopedChecklistId(investigationId: string, hypothesisId: string): string {
+  return `${investigationId}:${hypothesisId}`;
+}
+
 export function getChecklist(id: string): boolean[] | null {
   try {
     const raw = localStorage.getItem(CHECK_KEY);

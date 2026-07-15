@@ -1,20 +1,22 @@
 import { useMemo, useState } from 'react';
 import type { Hypothesis } from '../types';
 import { buildHandoffBrief } from '../lib/handoff';
-import { recordHandoff } from '../lib/storage';
+import { recordHandoff, type TestRecordEntry } from '../lib/storage';
 
 interface Props {
   intake: string;
   hypotheses: Hypothesis[];
   checklists: Record<string, boolean[]>;
+  testRecords: TestRecordEntry[];
 }
 
-export function HandoffCard({ intake, hypotheses, checklists }: Props) {
+export function HandoffCard({ intake, hypotheses, checklists, testRecords }: Props) {
   const [copied, setCopied] = useState(false);
   const brief = useMemo(
     () =>
       buildHandoffBrief({
         intake,
+        testRecords,
         hypotheses: hypotheses.map((hypothesis, index) => {
           const id = `${hypothesis.area}-${index + 1}`;
           return {
@@ -28,7 +30,7 @@ export function HandoffCard({ intake, hypotheses, checklists }: Props) {
           };
         }),
       }),
-    [intake, hypotheses, checklists]
+    [intake, hypotheses, checklists, testRecords]
   );
 
   async function copyBrief() {

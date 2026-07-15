@@ -11,13 +11,20 @@ export interface HandoffHypothesis {
 export interface HandoffInput {
   intake: string;
   hypotheses: HandoffHypothesis[];
+  testRecords?: Array<{
+    hypothesisId: string;
+    step: string;
+    prediction?: string;
+    outcome: 'completed' | 'not-safe' | 'need-help';
+    result?: string;
+  }>;
 }
 
 /**
  * Builds a portable case brief without identities, telemetry, or account data.
  * It lets a teacher, volunteer, or teammate continue the student's evidence trail.
  */
-export function buildHandoffBrief({ intake, hypotheses }: HandoffInput): string {
+export function buildHandoffBrief({ intake, hypotheses, testRecords = [] }: HandoffInput): string {
   const cases = hypotheses.map((hypothesis) => {
     const complete = hypothesis.checked.filter(Boolean).length;
     const marker = hypothesis.verifyFirst ? ' · Verify first' : '';
@@ -29,6 +36,12 @@ export function buildHandoffBrief({ intake, hypotheses }: HandoffInput): string 
       ),
     ].join('\n');
   });
+  const recordedEvidence = testRecords.map((record) => [
+    `- Check: ${record.step}`,
+    `  Outcome: ${record.outcome}`,
+    ...(record.prediction ? [`  Prediction: ${record.prediction}`] : []),
+    ...(record.result ? [`  Result: ${record.result}`] : []),
+  ].join('\n'));
 
   return [
     'BotMentor mentor handoff',
@@ -38,6 +51,9 @@ export function buildHandoffBrief({ intake, hypotheses }: HandoffInput): string 
     '',
     'What BotMentor suggested',
     cases.length > 0 ? cases.join('\n\n') : 'No hypotheses were generated.',
+    '',
+    'Student-recorded evidence',
+    recordedEvidence.length > 0 ? recordedEvidence.join('\n\n') : 'No test result recorded yet.',
     '',
     'Safety: pause for heat, exposed wiring, or an unsure step; involve an adult/mentor.',
     'Privacy: No student identity or account data is included.',

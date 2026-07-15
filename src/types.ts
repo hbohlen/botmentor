@@ -28,6 +28,7 @@ export interface Hypothesis {
   plainSteps: string[];
   confidence: number;
   verifyFirst: boolean;
+  safetyLevel: 'safe' | 'adult-present' | 'mentor-required';
   whyRanked: string;
   refs?: string[];
 }

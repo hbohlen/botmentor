@@ -19,6 +19,7 @@ interface Hypothesis {
   plainSteps: string[];
   confidence: number;
   verifyFirst: boolean;
+  safetyLevel: 'safe' | 'adult-present' | 'mentor-required';
   whyRanked: string;
   refs?: string[];
 }
@@ -67,11 +68,12 @@ const SYSTEM_PROMPT =
   '- Delegation: propose the test in plain language; the STUDENT runs it with their own hands. Never claim you ran a physical test or touched the robot. If the fix needs tools or risk (soldering, batteries, sharp parts), say "have an adult or mentor help with this step."\n' +
   '- Description: reason only from what the student reports. If the report is too thin to diagnose safely, ask ONE sharp clarifying question instead of guessing.\n' +
   '- Discernment: rank likely causes cheap-first and safe-first. Mark the single cheapest/safest check as verifyFirst. Explain in "whyRanked" why each hypothesis sits where it does, so the student learns the reasoning — not just the answer. Be explicit and honest when confidence is low.\n' +
-  '- Diligence: include safety notes (batteries, soldering, sharp parts); coach design too — if the root cause is a fragile mount or a bad connection, name the sturdier design. Be honest about low confidence rather than confident-but-wrong.\n\n' +
+  '- Diligence: include safety notes (batteries, soldering, sharp parts); coach design too — if the root cause is a fragile mount or a bad connection, name the sturdier design. Be honest about low confidence rather than confident-but-wrong.\n' +
+  '- Safety classification: set safetyLevel to safe only for observation or power-off checks a student can do independently; use adult-present for tools, charging, parts removal, or powered manipulation; use mentor-required for batteries showing damage/heat, exposed conductors, soldering, sharp parts, uncertainty, or anything not clearly student-safe.\n\n' +
   'Coach for the result AND the lesson. Each hypothesis may cite 1-3 reference IDs from this library that the student can open to learn more: ' +
   REF_LIST +
   '.\n\nReturn ONLY JSON matching this shape:\n' +
-  '{"hypotheses":[{"area":<motor|sensors|power|wiring|programming|mechanical|radio>,"title":string,"plainSteps":[string],"confidence":0..1,"verifyFirst":boolean,"whyRanked":string,"refs":[string]}],"dTags":["Delegation","Description","Discernment","Diligence"],"note":string}';
+  '{"hypotheses":[{"area":<motor|sensors|power|wiring|programming|mechanical|radio>,"title":string,"plainSteps":[string],"confidence":0..1,"verifyFirst":boolean,"safetyLevel":<safe|adult-present|mentor-required>,"whyRanked":string,"refs":[string]}],"dTags":["Delegation","Description","Discernment","Diligence"],"note":string}';
 
 function parseDiagnose(raw: string): DiagnoseResult {
   try {
@@ -83,6 +85,9 @@ function parseDiagnose(raw: string): DiagnoseResult {
       hypotheses: Array.isArray(parsed.hypotheses)
         ? (parsed.hypotheses as Hypothesis[]).map((h) => ({
             ...h,
+            safetyLevel: ['safe', 'adult-present', 'mentor-required'].includes(h.safetyLevel)
+              ? h.safetyLevel
+              : 'mentor-required',
             refs: Array.isArray(h.refs)
               ? h.refs.filter((id) => REF_INDEX.some((r) => r.id === id))
               : [],
@@ -167,22 +172,23 @@ export async function diagnose(input: string): Promise<DiagnoseResult> {
   // Mock — key-free, clearly labeled. Refs are area-matched from REF_INDEX.
   const normalizedInput = input.toLowerCase();
   if (normalizedInput.includes('battery') && /(hot|swollen|smell|leak|damage)/.test(normalizedInput)) {
-    return parseDiagnose(JSON.stringify({ hypotheses: [{ area: 'power', title: 'Potentially unsafe battery condition', plainSteps: ['Stop using the battery and move away from the robot if it is safe to do so.', 'Tell an adult mentor immediately; do not charge, open, or test the battery yourself.'], confidence: 0.95, verifyFirst: true, whyRanked: 'Heat, swelling, odor, leaks, or physical damage are safety signals, not a student repair task.', refs: refIdsForArea('power') }], note: 'Mock safety escalation: mentor or adult review is required before any further battery troubleshooting.' }));
+    return parseDiagnose(JSON.stringify({ hypotheses: [{ area: 'power', title: 'Potentially unsafe battery condition', plainSteps: ['Stop using the battery and move away from the robot if it is safe to do so.', 'Tell an adult mentor immediately; do not charge, open, or test the battery yourself.'], confidence: 0.95, verifyFirst: true, safetyLevel: 'mentor-required', whyRanked: 'Heat, swelling, odor, leaks, or physical damage are safety signals, not a student repair task.', refs: refIdsForArea('power') }], note: 'Mock safety escalation: mentor or adult review is required before any further battery troubleshooting.' }));
   }
   if (normalizedInput.includes('not sure') || normalizedInput.includes('something else')) {
-    return parseDiagnose(JSON.stringify({ hypotheses: [{ area: 'mechanical', title: 'Not enough evidence to choose a safe repair path', plainSteps: ['Pause hands-on changes and write down what you can observe safely.', 'Ask a mentor to review the robot with you before changing parts or wiring.'], confidence: 0.2, verifyFirst: true, whyRanked: 'The student explicitly reported uncertainty, so a mentor review is safer than guessing at a repair.', refs: refIdsForArea('mechanical') }], note: 'Mock low-confidence path: BotMentor is uncertain and recommends mentor review rather than a speculative fix.' }));
+    return parseDiagnose(JSON.stringify({ hypotheses: [{ area: 'mechanical', title: 'Not enough evidence to choose a safe repair path', plainSteps: ['Pause hands-on changes and write down what you can observe safely.', 'Ask a mentor to review the robot with you before changing parts or wiring.'], confidence: 0.2, verifyFirst: true, safetyLevel: 'mentor-required', whyRanked: 'The student explicitly reported uncertainty, so a mentor review is safer than guessing at a repair.', refs: refIdsForArea('mechanical') }], note: 'Mock low-confidence path: BotMentor is uncertain and recommends mentor review rather than a speculative fix.' }));
   }
   const mock = {
     hypotheses: [
       {
         area: 'power',
-        title: 'Battery sags under load',
+        title: 'Battery connection or charge is low',
         plainSteps: [
-          'Fully charge the battery, then try again.',
-          'If it works fresh but fails after a minute, the battery is weak.',
+          'With the robot turned off, check that the battery plug is fully seated.',
+          'Ask a mentor before charging or replacing the battery.',
         ],
         confidence: 0.65,
-        verifyFirst: false,
+        verifyFirst: true,
+        safetyLevel: 'safe',
         whyRanked:
           'Weak batteries cause intermittent "one side dies" and stuttering — the most common expo issue.',
         refs: refIdsForArea('power'),
@@ -195,7 +201,8 @@ export async function diagnose(input: string): Promise<DiagnoseResult> {
           'Gently tug the wire while powered — if it cuts out, that is the bad connection.',
         ],
         confidence: 0.55,
-        verifyFirst: true,
+        verifyFirst: false,
+        safetyLevel: 'adult-present',
         whyRanked: 'Loose plugs mimic motor failure; check it before swapping parts (cheap, safe, first).',
         refs: refIdsForArea('wiring'),
       },
@@ -208,6 +215,7 @@ export async function diagnose(input: string): Promise<DiagnoseResult> {
         ],
         confidence: 0.4,
         verifyFirst: false,
+        safetyLevel: 'safe',
         whyRanked: 'A sign error produces direction-dependent stutter; worth a quick code check.',
         refs: refIdsForArea('programming'),
       },

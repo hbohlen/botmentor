@@ -16,6 +16,16 @@ const brief = buildHandoffBrief({
       checked: [true, false],
     },
   ],
+  testRecords: [
+    {
+      hypothesisId: 'wiring-1',
+      step: 'Power off the robot.',
+      prediction: 'The loose plug will move.',
+      outcome: 'completed',
+      result: 'The plug was loose and clicked into place.',
+      ts: 1,
+    },
+  ],
 });
 
 const required = [
@@ -23,6 +33,8 @@ const required = [
   'Symptom: left motor stutters',
   '1. Wiring — Swap motor cables at the driver',
   'Progress: 1/2 student-led checks complete',
+  'Prediction: The loose plug will move.',
+  'Result: The plug was loose and clicked into place.',
   'Safety: pause for heat, exposed wiring, or an unsure step; involve an adult/mentor.',
   'No student identity or account data is included.',
 ];
