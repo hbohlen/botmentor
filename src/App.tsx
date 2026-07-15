@@ -4,6 +4,7 @@ import { Results } from './components/Results';
 import { HealthPill } from './components/HealthPill';
 import { DTagLegend } from './components/DTagLegend';
 import { RefLibrary } from './components/RefLibrary';
+import { TeamSelector } from './components/TeamSelector';
 import type { DiagnoseResult } from './types';
 
 type Tab = 'diagnose' | 'references';
@@ -59,6 +60,7 @@ export function App() {
             📚 References
           </button>
         </nav>
+        <TeamSelector />
       </header>
 
       {tab === 'diagnose' ? (

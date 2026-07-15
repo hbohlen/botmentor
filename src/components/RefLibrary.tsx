@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { allRefs, getRef } from '../lib/refs';
+import { allRefs, useActiveTeam } from '../lib/refs';
 import { RefDrawer } from './RefDrawer';
 
 // Browse the robot's reference library without diagnosing — proactive learning.
-// Client-side filter by area. See ADR-011.
+// Client-side filter by area; re-resolves against the active team's docs. See ADR-011/014.
 const AREAS = ['motor', 'sensors', 'power', 'wiring', 'programming', 'mechanical', 'radio'];
 
 export function RefLibrary() {
+  useActiveTeam(); // re-render when the team (and thus the library) changes
   const [area, setArea] = useState<string | null>(null);
   const [openRef, setOpenRef] = useState<string | null>(null);
   const refs = allRefs().filter((r) => (area ? r.area === area : true));

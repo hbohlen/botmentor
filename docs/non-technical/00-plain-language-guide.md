@@ -42,6 +42,9 @@ and the reason it's ranked there) — so you can check the citation, not just tr
 And when you mark whether an idea worked, it hands you the right docs to read next — to
 understand *why* it worked, or why it didn't before you try the next idea. The fix loop
 teaches, it doesn't just tally.
+And each team can load *its own robot's* docs: the "📁 Team docs" picker at the top swaps
+the reference library, so the mentor cites your team's motors, wiring, and tuning — not a
+generic bot's. Pick your team once and it's remembered on this browser.
 
 ## Why it's built this way (the "4D" idea)
 The tool follows a simple four-part coaching method. You'll see these words in the app:

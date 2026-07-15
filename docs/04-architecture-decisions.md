@@ -81,6 +81,22 @@ re-engages the iterate-verify loop — exactly the expo-mentor behavior.
 (Q5); a host org could later back it with a shared store to compare cohorts.
 All four 4D competencies now have a dedicated interactive component.
 
+## ADR-014: Per-team doc swap — each team loads its own robot's references
+**Decision.** `src/teams.ts` holds a `TEAMS` registry; each team's library is the GENERIC
+base (`src/refs.ts`) MERGED by ID with the team's `overrides`. A `TeamSelector` in the
+masthead sets the active team, persisted to localStorage and shared via a
+`useSyncExternalStore` store (`useActiveTeam`/`setActiveTeam` in `lib/refs.ts`). `getRef`
+and `allRefs` resolve against the active team, so chips, the doc drawer, and the Browse
+tab all swap docs live when the team changes.
+**Context.** V2 of Cited-References (deferred in ADR-011). Real teams have different robots;
+the tool should cite *their* wiring/motors/tuning, not a generic bot. Merging on the generic
+base guarantees every area-matched citation ID from the diagnose fn still resolves, even for
+areas a team hasn't overridden.
+**Consequence.** Client-only, keyless, contract-safe: `api/diagnose.ts` still attaches
+area-matched IDs from its inline `REF_INDEX`; the client resolves those IDs against the
+active team's merged library. Eval unchanged (20/20) — the fn doesn't know about teams. A
+host org adds a team by appending to `TEAMS` (or later, loading team docs from a store).
+
 ## ADR-013: Guided learning from the log — the fix loop points back to the docs
 **Decision.** After a student marks "Did this work?" on a hypothesis, a `.learn-loop`
 block appears with outcome-aware copy and that hypothesis's ref chips: worked → "read why,
