@@ -39,6 +39,9 @@ fault. There's also a "📚 References" tab to browse the whole library before t
 stuck — so the tool teaches from the team's real documentation, not just from the answer.
 When you open a reference from a mentor idea, it tells you *why* it was cited (which idea,
 and the reason it's ranked there) — so you can check the citation, not just trust it.
+And when you mark whether an idea worked, it hands you the right docs to read next — to
+understand *why* it worked, or why it didn't before you try the next idea. The fix loop
+teaches, it doesn't just tally.
 
 ## Why it's built this way (the "4D" idea)
 The tool follows a simple four-part coaching method. You'll see these words in the app:

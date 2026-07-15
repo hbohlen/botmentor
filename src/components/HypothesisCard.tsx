@@ -81,6 +81,26 @@ export function HypothesisCard({
           </button>
         ))}
       </div>
+      {feedback && hypothesis.refs && hypothesis.refs.length > 0 && (
+        <div className="learn-loop">
+          <span className="learn-msg">
+            {feedback === 'yes'
+              ? '✅ It worked — now read why, so you can spot it faster next time:'
+              : feedback === 'no'
+                ? '❌ Not it — study why this was likely, then move to the next idea:'
+                : '🤔 Partly — read the docs to see what else could be going on:'}
+          </span>
+          <div className="ref-chips">
+            {hypothesis.refs.map((rid) => (
+              <RefChip
+                key={rid}
+                title={rid.replace(/^ref-/, '').replace(/-/g, ' ')}
+                onClick={() => onOpenRef(rid, provenance)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </li>
   );
 }

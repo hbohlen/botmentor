@@ -81,6 +81,18 @@ re-engages the iterate-verify loop — exactly the expo-mentor behavior.
 (Q5); a host org could later back it with a shared store to compare cohorts.
 All four 4D competencies now have a dedicated interactive component.
 
+## ADR-013: Guided learning from the log — the fix loop points back to the docs
+**Decision.** After a student marks "Did this work?" on a hypothesis, a `.learn-loop`
+block appears with outcome-aware copy and that hypothesis's ref chips: worked → "read why,
+so you spot it faster"; didn't → "study why this was likely, then move on"; partial →
+"see what else could be going on." Chips open the same provenance drawer (ADR-012).
+**Context.** Suggestion #4 from the brainstorm. The Diligence log (ADR-010) captured
+outcomes but dead-ended; this closes the loop by routing the moment of feedback back into
+the documentation — the win/loss becomes a reason to read, not just a tally.
+**Consequence.** Pure UI, no contract/eval change: reuses `hypothesis.refs`, `provenance`,
+and `onOpenRef` already in the card. Only renders once feedback is set and refs exist.
+Build + typecheck + eval unchanged (20/20).
+
 ## ADR-012: "Why this ref" provenance — the citation is checkable
 **Decision.** When a student opens a reference from a hypothesis chip, the `RefDrawer`
 shows a "Why you're seeing this" block: which hypothesis cited it (rank + area + title)
