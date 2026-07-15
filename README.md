@@ -11,6 +11,10 @@ Built on Anthropic's **AI Fluency 4D Framework** (Delegation, Description, Disce
 with those principles surfaced directly in the interface so the coaching method is legible — not
 hidden inside a black box.
 
+**Prototype boundary:** The public demo uses a configurable model provider. The workflow is
+designed around Anthropic's AI Fluency 4D Framework; provider choice does not validate output
+quality or safety, and outputs are suggestions to verify—not hardware diagnoses.
+
 **Origin:** Nebraska Robotics Expo volunteering (2017–2018), where University of Nebraska–Omaha
 engineering students mentored middle- and high-school teams through troubleshooting under
 competition-day pressure.
@@ -68,8 +72,10 @@ organization own the system after the original builder moves on.
   Intentionally self-contained — zero relative imports — because Vercel's bundler externalizes
   them (see `docs/04-architecture-decisions.md`, ADR-001).
 - **Local dev proxy:** `src/server/index.ts` (Express) reuses the same diagnose logic.
-- **Providers** (selected by `PROVIDER` env var): Anthropic (`claude-sonnet-5`, prod) /
-  DeepSeek OpenAI-compatible (`deepseek-v4-flash`, cheap test) / Mock (key-free demo).
+- **Providers** (selected by `PROVIDER` env var): Anthropic (`claude-sonnet-5`),
+  DeepSeek OpenAI-compatible (`deepseek-v4-flash`), or Mock (key-free demo). The current
+  public-demo provider is reported by `/api/health`; no provider label establishes output quality
+  or safety.
 
 ### Run locally
 
@@ -85,8 +91,8 @@ npm run dev                      # Vite UI on :5173, proxies /api -> :8788
 
 ```bash
 PROVIDER=mock      npm run dev     # no key — public-demo safe
-PROVIDER=deepseek  npm run dev     # cheap testing (DEEPSEEK_API_KEY)
-PROVIDER=anthropic npm run dev     # production (ANTHROPIC_API_KEY), claude-sonnet-5
+PROVIDER=deepseek  npm run dev     # DeepSeek-compatible provider (DEEPSEEK_API_KEY)
+PROVIDER=anthropic npm run dev     # Anthropic provider (ANTHROPIC_API_KEY), claude-sonnet-5
 ```
 
 ### Deploy
