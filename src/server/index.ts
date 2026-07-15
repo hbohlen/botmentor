@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
-import { diagnose } from '../../api/diagnose';
+import { diagnose, normalizeDiagnoseRequest } from '../../api/diagnose';
 
 // Local dev proxy. In production this exact logic runs as a Vercel serverless function
 // (api/diagnose.ts) — see vercel.json. Keys are read server-side only via the shared
@@ -25,13 +25,13 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.post('/api/diagnose', async (req, res) => {
-  const input = String((req.body as { input?: unknown })?.input ?? '').trim();
-  if (!input) {
-    res.status(400).json({ error: 'Missing "input".' });
+  const normalized = normalizeDiagnoseRequest(req.body);
+  if ('error' in normalized) {
+    res.status(400).json({ error: normalized.error });
     return;
   }
   try {
-    const result = await diagnose(input);
+    const result = await diagnose(normalized.input);
     res.json(result);
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';

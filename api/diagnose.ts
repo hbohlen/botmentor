@@ -102,6 +102,25 @@ function parseDiagnose(raw: string): DiagnoseResult {
   }
 }
 
+export interface StructuredContext {
+  selectedSystem: string;
+  symptomLabel: string;
+  observations: { prompt: string; answer: string; source: 'student' }[];
+  freeText?: string;
+}
+
+export function normalizeDiagnoseRequest(body: unknown): { input: string; context?: StructuredContext } | { error: string } {
+  if (!body || typeof body !== 'object') return { error: 'Missing "input" or structured context.' };
+  const value = body as { input?: unknown; context?: unknown };
+  const input = typeof value.input === 'string' ? value.input.trim() : '';
+  if (value.context === undefined) return input ? { input } : { error: 'Missing "input".' };
+  const context = value.context as Partial<StructuredContext>;
+  if (typeof context.selectedSystem !== 'string' || typeof context.symptomLabel !== 'string' || !Array.isArray(context.observations) || !context.observations.every((item) => item && typeof item.prompt === 'string' && typeof item.answer === 'string' && item.source === 'student')) return { error: 'Malformed structured context.' };
+  const structured: StructuredContext = { selectedSystem: context.selectedSystem, symptomLabel: context.symptomLabel, observations: context.observations, ...(typeof context.freeText === 'string' ? { freeText: context.freeText } : {}) };
+  const summary = [`Selected robot system: ${structured.selectedSystem}.`, `Student-selected symptom: ${structured.symptomLabel}.`, ...structured.observations.map((item) => `Student observation: ${item.prompt} Answer: ${item.answer}.`), structured.freeText ? `Student free-text: ${structured.freeText}` : '', input].filter(Boolean).join('\n');
+  return { input: summary, context: structured };
+}
+
 export async function diagnose(input: string): Promise<DiagnoseResult> {
   const provider = (process.env.PROVIDER ?? 'mock').toLowerCase();
 
@@ -146,6 +165,13 @@ export async function diagnose(input: string): Promise<DiagnoseResult> {
   }
 
   // Mock — key-free, clearly labeled. Refs are area-matched from REF_INDEX.
+  const normalizedInput = input.toLowerCase();
+  if (normalizedInput.includes('battery') && /(hot|swollen|smell|leak|damage)/.test(normalizedInput)) {
+    return parseDiagnose(JSON.stringify({ hypotheses: [{ area: 'power', title: 'Potentially unsafe battery condition', plainSteps: ['Stop using the battery and move away from the robot if it is safe to do so.', 'Tell an adult mentor immediately; do not charge, open, or test the battery yourself.'], confidence: 0.95, verifyFirst: true, whyRanked: 'Heat, swelling, odor, leaks, or physical damage are safety signals, not a student repair task.', refs: refIdsForArea('power') }], note: 'Mock safety escalation: mentor or adult review is required before any further battery troubleshooting.' }));
+  }
+  if (normalizedInput.includes('not sure') || normalizedInput.includes('something else')) {
+    return parseDiagnose(JSON.stringify({ hypotheses: [{ area: 'mechanical', title: 'Not enough evidence to choose a safe repair path', plainSteps: ['Pause hands-on changes and write down what you can observe safely.', 'Ask a mentor to review the robot with you before changing parts or wiring.'], confidence: 0.2, verifyFirst: true, whyRanked: 'The student explicitly reported uncertainty, so a mentor review is safer than guessing at a repair.', refs: refIdsForArea('mechanical') }], note: 'Mock low-confidence path: BotMentor is uncertain and recommends mentor review rather than a speculative fix.' }));
+  }
   const mock = {
     hypotheses: [
       {
@@ -196,13 +222,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(405).json({ error: 'Method not allowed' });
     return;
   }
-  const input = String((req.body as { input?: unknown })?.input ?? '').trim();
-  if (!input) {
-    res.status(400).json({ error: 'Missing "input".' });
+  const normalized = normalizeDiagnoseRequest(req.body);
+  if ('error' in normalized) {
+    res.status(400).json({ error: normalized.error });
     return;
   }
   try {
-    const result = await diagnose(input);
+    const result = await diagnose(normalized.input);
     res.status(200).json(result);
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';

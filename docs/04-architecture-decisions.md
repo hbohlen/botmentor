@@ -81,6 +81,11 @@ re-engages the iterate-verify loop — exactly the expo-mentor behavior.
 (Q5); a host org could later back it with a shared store to compare cohorts.
 All four 4D competencies now have a dedicated interactive component.
 
+## ADR-015: Visual robot map is the first diagnostic entry point
+**Decision.** The Diagnose tab starts with a keyboard-accessible, labelled map of six generic systems—Power, Drive base, Arms and mechanisms, Sensors, Wiring, and Code/controller—plus Issue/Evidence/System/Mentor layers. It persists only a validated selection and active layer in browser localStorage; the text intake remains an explicit fallback.
+**Context.** At the Nebraska Robotics Expo, students could often point to a part before they had technical vocabulary. The project needs to teach Description rather than assume it, while avoiding a false claim that a generic visual map is a hardware digital twin.
+**Consequence.** The initial map is a student-first orientation and shared mentor language, not a diagnosis. It uses stable IDs, visible status text/iconography in addition to color, and a pure status reducer so later guided refinement can add evidence without parsing model prose. The server API contract remains unchanged in Phase 1.
+
 ## ADR-014: Per-team doc swap — each team loads its own robot's references
 **Decision.** `src/teams.ts` holds a `TEAMS` registry; each team's library is the GENERIC
 base (`src/refs.ts`) MERGED by ID with the team's `overrides`. A `TeamSelector` in the

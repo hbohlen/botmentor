@@ -1,5 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Intake } from './components/Intake';
+import { SymptomRefiner } from './components/SymptomRefiner';
+import { RobotSystemMap } from './components/RobotSystemMap';
+import {
+  DEFAULT_MAP_STATE,
+  deriveSystemStatuses,
+  getRobotSystem,
+  getStatusesForLayer,
+  parseMapState,
+  serializeMapState,
+  type BuiltInvestigationContext,
+  type MapLayer,
+  type RobotSystem,
+} from './lib/robot-workspace';
 import { Results } from './components/Results';
 import { HealthPill } from './components/HealthPill';
 import { DTagLegend } from './components/DTagLegend';
@@ -16,20 +29,54 @@ export function App() {
   const [lastIntake, setLastIntake] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mapState, setMapState] = useState(() => {
+    if (typeof window === 'undefined') return { ...DEFAULT_MAP_STATE };
+    try {
+      return parseMapState(window.localStorage.getItem('botmentor:map-status:v1'));
+    } catch {
+      return { ...DEFAULT_MAP_STATE };
+    }
+  });
+  const [showTextIntake, setShowTextIntake] = useState(false);
+  const baseStatuses = deriveSystemStatuses({ selectedSystem: mapState.selectedSystem });
+  const systemStatuses = getStatusesForLayer(mapState.layer, baseStatuses, mapState.selectedSystem);
 
-  async function diagnose(input: string) {
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('botmentor:map-status:v1', serializeMapState(mapState));
+    } catch {
+      // Browser privacy modes can block storage; the current session still works in memory.
+    }
+  }, [mapState]);
+
+  function selectSystem(selectedSystem: RobotSystem) {
+    setMapState((current) => ({ ...current, selectedSystem }));
+    setShowTextIntake(true);
+  }
+
+  function selectLayer(layer: MapLayer) {
+    setMapState((current) => ({ ...current, layer }));
+  }
+
+  async function diagnose(input: string | BuiltInvestigationContext) {
+    const context = typeof input === 'string' ? undefined : input;
+    const rawInput = typeof input === 'string' ? input : input.summary;
+    const selected = context ? undefined : mapState.selectedSystem ? getRobotSystem(mapState.selectedSystem) : undefined;
+    const investigationInput = selected
+      ? `Selected robot system: ${selected.label}.\nStudent description: ${rawInput}`
+      : rawInput;
     setLoading(true);
     setError(null);
     try {
       const res = await fetch('/api/diagnose', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ input }),
+        body: JSON.stringify(context ? { input: investigationInput, context: { selectedSystem: context.selectedSystem, symptomLabel: context.symptomLabel, observations: context.observations, freeText: context.freeText } } : { input: investigationInput }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Request failed');
       setResult(data as DiagnoseResult);
-      setLastIntake(input);
+      setLastIntake(investigationInput);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Request failed');
     } finally {
@@ -71,7 +118,29 @@ export function App() {
 
       {tab === 'diagnose' ? (
         <>
-          <Intake onSubmit={diagnose} loading={loading} />
+          <RobotSystemMap
+            selectedSystem={mapState.selectedSystem}
+            statuses={systemStatuses}
+            layer={mapState.layer}
+            onSelectSystem={selectSystem}
+            onSelectLayer={selectLayer}
+          />
+          {showTextIntake ? (
+            <section className="map-intake" aria-labelledby="map-intake-title">
+              <h2 id="map-intake-title">
+                {mapState.selectedSystem ? 'Tell me what you noticed' : 'Describe the problem'}
+              </h2>
+              {mapState.selectedSystem ? (
+                <SymptomRefiner system={mapState.selectedSystem} loading={loading} onSubmit={diagnose} />
+              ) : (
+                <Intake onSubmit={diagnose} loading={loading} />
+              )}
+            </section>
+          ) : (
+            <button type="button" className="text-intake-toggle" onClick={() => setShowTextIntake(true)}>
+              Describe it another way
+            </button>
+          )}
           {error && <p className="error">⚠ {error}</p>}
           {result && <Results result={result} intake={lastIntake} />}
         </>

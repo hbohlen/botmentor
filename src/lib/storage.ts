@@ -5,7 +5,32 @@ export interface FeedbackEntry {
   ts: number;
 }
 
+export interface TestRecordEntry {
+  hypothesisId: string;
+  step: string;
+  prediction?: string;
+  outcome: 'completed' | 'not-safe' | 'need-help';
+  result?: string;
+  ts: number;
+}
+
+const TEST_KEY = 'botmentor:test-records';
 const FEEDBACK_KEY = 'botmentor:feedback';
+
+export function recordTest(entry: Omit<TestRecordEntry, 'ts'>) {
+  try {
+    const raw = localStorage.getItem(TEST_KEY);
+    const records: TestRecordEntry[] = raw ? JSON.parse(raw) : [];
+    records.push({ ...entry, ts: Date.now() });
+    localStorage.setItem(TEST_KEY, JSON.stringify(records));
+  } catch { /* local-only best effort */ }
+}
+
+export function getTestRecords(): TestRecordEntry[] {
+  try { return JSON.parse(localStorage.getItem(TEST_KEY) ?? '[]') as TestRecordEntry[]; } catch { return []; }
+}
+
+
 const CHECK_KEY = 'botmentor:checklist';
 const HANDOFF_KEY = 'botmentor:handoffs';
 

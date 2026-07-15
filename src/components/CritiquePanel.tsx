@@ -23,19 +23,22 @@ export function CritiquePanel({ hypothesis }: { hypothesis: Hypothesis }) {
   const firstStep = hypothesis.plainSteps[0] ?? 'the first test step';
   const mentorQ = `Ask a mentor: “For “${hypothesis.title},” I’m testing ${firstStep}. What should I watch for?”`;
 
+  const evidenceUsed = hypothesis.whyRanked;
+  const changeRanking = `If ${confirm.toLowerCase()} gives a different result than expected, lower this idea and consider ${alternateArea(hypothesis.area)} instead.`;
+  const safeTest = hypothesis.confidence < 0.45
+    ? 'No safe differentiating student test is available from this evidence. Ask a mentor to inspect it with you.'
+    : `Safest differentiating test: ${firstStep}`;
+  const escalation = hypothesis.confidence < 0.45
+    ? 'Escalate now: the evidence is too thin for a safe student-led repair.'
+    : 'Escalate if this check needs battery work, soldering, sharp parts, or gives an unclear result.';
+
   return (
     <div className="critique">
-      <p>
-        <strong>✅ Confirm:</strong> {confirm}
-      </p>
-      <p>
-        <strong>❌ Disprove:</strong> What single observation would rule this out? If you saw it, would
-        you trust the test over this guess?
-      </p>
-      <p>
-        <strong>🔁 Same symptom, different cause:</strong> Could a <em>{alternateArea(hypothesis.area)}</em>{' '}
-        fault look identical? List one before you swap parts.
-      </p>
+      <p><strong>Evidence used:</strong> {evidenceUsed}</p>
+      <p><strong>What would change the ranking:</strong> {changeRanking}</p>
+      <p><strong>Alternate explanation:</strong> A <em>{alternateArea(hypothesis.area)}</em> fault can create a similar symptom.</p>
+      <p><strong>Safe differentiating test:</strong> {safeTest}</p>
+      <p><strong>Escalation condition:</strong> {escalation}</p>
       <p className="mentor-q">👤 {mentorQ}</p>
     </div>
   );

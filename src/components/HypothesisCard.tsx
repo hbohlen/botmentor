@@ -35,6 +35,8 @@ export function HypothesisCard({
     recordFeedback({ hypothesisId: id, area: hypothesis.area, worked: v });
   }
 
+  const status = feedback === 'yes' ? 'Supported by a student result' : feedback === 'no' ? 'Ruled out by a student result' : feedback === 'partial' ? 'Partly supported — keep investigating' : hypothesis.confidence < 0.45 ? 'Uncertain — mentor review may help' : 'Untested suggestion';
+
   return (
     <li className="hyp">
       <div className="ai-part">🤖 Claude suggests</div>
@@ -44,6 +46,7 @@ export function HypothesisCard({
         <span className="title">{hypothesis.title}</span>
         <ConfidenceBar value={Math.round((hypothesis.confidence ?? 0) * 100)} />
       </div>
+      <p className="hyp-status" role="status">Status: {status}</p>
       <ActionChecklist
         hypothesisId={id}
         steps={hypothesis.plainSteps}

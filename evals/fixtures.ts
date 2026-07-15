@@ -48,4 +48,10 @@ export const FIXTURES: EvalFixture[] = [
     expectVerifyFirst: false,
     allowedAreas: ['motor', 'sensors', 'power', 'wiring', 'programming', 'mechanical', 'radio'],
   },
+  { name: 'power context', input: 'Selected robot system: Power. Student-selected symptom: It turns off or resets.', expectVerifyFirst: true, allowedAreas: ['motor', 'sensors', 'power', 'wiring', 'programming', 'mechanical', 'radio'] },
+  { name: 'mechanism context', input: 'Selected robot system: Arms and mechanisms. Student-selected symptom: It gets stuck or jams.', expectVerifyFirst: true, allowedAreas: ['motor', 'sensors', 'power', 'wiring', 'programming', 'mechanical', 'radio'] },
+  { name: 'wiring context', input: 'Selected robot system: Wiring. Student-selected symptom: It only works sometimes.', expectVerifyFirst: true, allowedAreas: ['motor', 'sensors', 'power', 'wiring', 'programming', 'mechanical', 'radio'] },
+  { name: 'code-control context', input: 'Selected robot system: Code and controller. Student-selected symptom: The program will not run.', expectVerifyFirst: true, allowedAreas: ['motor', 'sensors', 'power', 'wiring', 'programming', 'mechanical', 'radio'] },
+  { name: 'low-confidence escalation', input: 'something else happened and I am not sure what changed', expectVerifyFirst: true, allowedAreas: ['mechanical'] },
+  { name: 'unsafe battery escalation', input: 'battery is hot and swollen after the match', expectVerifyFirst: true, allowedAreas: ['power'] },
 ];
