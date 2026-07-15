@@ -54,7 +54,22 @@ Operate / maintain / extend procedures live in [`docs/`](docs/README.md) — run
 architecture decisions, and a non-technical handover guide. This is the sustainability layer
 for the organization after the original author moves on.
 
-## Status
-MVP live and verified: `POST /api/diagnose` returns 4D-tagged mentoring JSON via DeepSeek.
-Eval harness (Arize Phoenix), RAG knowledge base, and Mentor Copilot / 4D Prompt Lab modes
-are explicitly deferred (see `docs/03-maintain-and-extend.md`).
+## Why it matters (Claude Corps framing)
+BotMentor is the "built end-to-end, can discuss honestly" artifact for the **Claude Corps
+Fellow** application. It is deliberately built so a **non-profit host organization** can own
+and grow it after the author leaves:
+
+- **Mentoring, not fixing.** The 4D Framework is surfaced in the UI so the coaching method
+  is *legible* to a non-technical program lead — not hidden inside a black box.
+- **Hand-off first.** Two-track docs (technical runbooks + a plain-language guide) mean
+  operation doesn't depend on one person's memory (bus-factor mitigation).
+- **Honest about failures.** The architecture decisions (`docs/04-architecture-decisions.md`)
+  document two real production bugs and the lessons from each — the "discuss it honestly"
+  signal the program looks for.
+- **Quality gate without secrets.** `npm run eval` runs a deterministic, keyless check of the
+  4D mentoring contract, so a volunteer can guard quality in CI without API keys.
+- **Rooted in real service.** Origin: Nebraska Robotics Expo volunteering (2017–2018), where
+  UNO engineering students coached K–12 teams through troubleshooting and robot-design
+  improvement under competition-day time pressure.
+
+Live demo: https://botmentor.vercel.app

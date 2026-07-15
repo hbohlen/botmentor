@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Intake } from './components/Intake';
 import { Results } from './components/Results';
+import { HealthPill } from './components/HealthPill';
+import { DTagLegend } from './components/DTagLegend';
 import type { DiagnoseResult } from './types';
 
 export function App() {
@@ -30,15 +32,20 @@ export function App() {
   return (
     <main className="app">
       <header className="masthead">
-        <h1>BotMentor</h1>
+        <div className="masthead-row">
+          <h1>BotMentor</h1>
+          <HealthPill />
+        </div>
         <p>
           A mentoring co-pilot for student robotics teams — built on the AI Fluency 4D
-          Framework. Origin: Nebraska Robotics Expo volunteering (2017–2018).
+          Framework. Rooted in the Nebraska Robotics Expo, where college engineering
+          students coached K–12 teams through troubleshooting and robot-design improvement.
         </p>
       </header>
       <Intake onSubmit={diagnose} loading={loading} />
       {error && <p className="error">⚠ {error}</p>}
       {result && <Results result={result} />}
+      <DTagLegend />
     </main>
   );
 }

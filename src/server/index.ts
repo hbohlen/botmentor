@@ -9,7 +9,19 @@ const app = express();
 app.use(express.json());
 
 app.get('/api/health', (_req, res) => {
-  res.json({ ok: true, provider: (process.env.PROVIDER ?? 'mock').toLowerCase() });
+  const provider = (process.env.PROVIDER ?? 'mock').toLowerCase();
+  const hasKey =
+    (provider === 'anthropic' && !!process.env.ANTHROPIC_API_KEY) ||
+    (provider === 'deepseek' && !!process.env.DEEPSEEK_API_KEY) ||
+    provider === 'mock';
+  res.json({
+    ok: true,
+    provider,
+    keyConfigured: hasKey,
+    domains: ['robotics'],
+    framework: 'AI Fluency 4D',
+    dTags: ['Delegation', 'Description', 'Discernment', 'Diligence'],
+  });
 });
 
 app.post('/api/diagnose', async (req, res) => {

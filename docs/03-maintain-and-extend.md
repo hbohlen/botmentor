@@ -44,8 +44,12 @@ relative imports. Vercel's bundler drops them (Runbook R5). If you need shared c
    `api/<mode>.ts` copying the structure of `api/diagnose.ts`; add a tab in the UI.
 2. **A knowledge base** (RAG) of past Expo fixes. Store Q&A as markdown/JSON, embed at request
    time, inject into `SYSTEM_PROMPT`. No vector DB required to start — a static JSON file works.
-3. **An eval harness** (Arize Phoenix or even a scripted JSON test set) to measure whether the
-   mentor's rankings are sound before/after prompt changes. Protects quality as it evolves.
+3. **An eval harness** — now shipped as `evals/run.ts` (`npm run eval`). It runs the
+   `mock` engine against fixed robotics fixtures and asserts the 4D mentoring contract
+   (valid JSON, in-taxonomy hypotheses, `verifyFirst` present, 4D tags present) with
+   **no API key and no network**, so a volunteer can guard quality in CI. Details in
+   `docs/05-eval-harness.md`. If you later add a live-provider regression set, keep it
+   separate (it costs money) and gate it behind a flag.
 4. **Multi-language UI** for non-English robotics clubs. The UI strings are in `src/components/*`.
 
 ## Bus-factor mitigation (this is the point)

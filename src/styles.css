@@ -15,6 +15,11 @@ body {
 .app { max-width: 760px; margin: 0 auto; padding: 24px; }
 .masthead h1 { margin: 0 0 4px; color: var(--accent); }
 .masthead p { color: var(--muted); margin-top: 0; }
+.masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pill { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+.pill--ok { background: #052e16; color: #4ade80; border: 1px solid #166534; }
+.pill--bad { background: #450a0a; color: #f87171; border: 1px solid #991b1b; }
+.pill--unknown { background: #1e293b; color: var(--muted); border: 1px solid #334155; }
 .intake {
   display: flex; flex-direction: column; gap: 12px;
   background: var(--panel); padding: 16px; border-radius: 12px;
@@ -60,3 +65,10 @@ button:disabled { opacity: 0.6; cursor: default; }
 .feedback { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 14px; }
 .feedback button { background: #334155; color: var(--ink); font-weight: 500; padding: 4px 10px; }
 .feedback button.active { background: var(--accent); color: #03283a; }
+.legend { margin-top: 24px; background: var(--panel); border: 1px solid #334155; border-radius: 12px; padding: 12px 16px; }
+.legend summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+.legend-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 12px; }
+.legend-item p { margin: 6px 0 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
+@media (min-width: 560px) {
+  .legend-grid { grid-template-columns: 1fr 1fr; }
+}

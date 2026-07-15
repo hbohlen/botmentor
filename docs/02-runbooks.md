@@ -50,3 +50,16 @@ Edit `SYSTEM_PROMPT` inside `api/diagnose.ts`: add the area to the `area:<...>` 
 
 ## R7. Add a new model provider
 In `api/diagnose.ts` `diagnose()`, add an `else if (provider === 'yours')` branch that calls your endpoint and passes `SYSTEM_PROMPT` + user input, then `parseDiagnose(text)`. Keep the defensive JSON parse — never trust raw model output.
+
+## R8. Run the quality gate (eval harness)
+Deterministic, keyless — run it before any `SYSTEM_PROMPT` change reaches prod:
+```bash
+export PATH="$HOME/.local/share/mise/installs/node/22.23.1/bin:$PATH"
+npm install --include=dev
+npm run eval            # 15 checks across 5 fixtures; exit 0 = pass
+npm run eval -- --verbose
+```
+If it fails: a hypothesis escaped the fault taxonomy, or the `verifyFirst`/4D-tag
+contract broke. Fix before deploying (R1). The harness lives in `evals/`; full write-up
+in `docs/05-eval-harness.md`.
+

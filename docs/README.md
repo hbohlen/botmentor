@@ -18,8 +18,11 @@ Read in this order:
    procedures: deploy, rotate keys, switch provider, run locally, troubleshoot, extend.
 4. **[03-maintain-and-extend.md](03-maintain-and-extend.md)** — *How does the org keep it alive
    and grow it?* Onboarding for a new dev + bus-factor mitigation + expansion recipes.
-5. **[04-architecture-decisions.md](04-architecture-decisions.md)** — *Why is it like this?* ADRs
+4. **[04-architecture-decisions.md](04-architecture-decisions.md)** — *Why is it like this?* ADRs
    (esp. ADR-001: the function is intentionally a single self-contained file).
+5. **[05-eval-harness.md](05-eval-harness.md)** — *How do we keep the mentoring quality
+   honest as it changes?* The deterministic, keyless eval: run `npm run eval` in CI with
+   no API key, no network.
 
 ## Non-technical track (for everyone else)
 [`non-technical/README.md`](non-technical/README.md) — plain-language guide, 2-minute

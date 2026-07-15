@@ -34,7 +34,13 @@ file (fine under `tsx`; the function itself has no relative imports).
 **Context.** Vercel does not run a long-lived Express server; the proxy exists solely so
 `npm run dev` works offline.
 
-## ADR-005: Defensive JSON parse, never trust raw model output
-**Decision.** `parseDiagnose` extracts the first `{`…`}` and returns a safe fallback on failure.
-**Context.** Models wrap JSON in prose or fences; a crash here would 500 the endpoint. The
-fallback keeps the UI renderable.
+## ADR-006: Production `/api/health` parity + keyless eval harness
+**Decision.** A real `api/health.ts` serverless function mirrors the local proxy's
+`/api/health` shape (provider, keyConfigured, domains, framework, dTags). A separate
+`evals/run.ts` runs the `mock` engine against fixed fixtures and asserts the 4D contract.
+**Context.** The local proxy had `/api/health` but production did not — a parity gap that
+broke the operator health pill and gave a false "unknown" in prod. The eval closes the
+"how do we keep mentoring quality honest as it changes" open question from `03-maintain`.
+**Consequence.** A host-org operator can confirm liveness + live-vs-practice mode from the
+UI with no terminal; CI can guard quality with no secrets and no network.
+
