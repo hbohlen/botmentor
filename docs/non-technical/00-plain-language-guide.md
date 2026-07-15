@@ -12,6 +12,11 @@ it helps the student *think through* the problem and do the hands-on testing the
 named after the Nebraska Robotics Expo, where college students volunteered to coach
 middle- and high-school robotics teams.
 
+**The screen makes the split obvious:** a panel at the top shows "🤖 Claude works out the
+causes" vs "✋ You run the tests," with a progress bar of the hands-on steps the student
+has ticked off. That is the whole point in one glance — the tool never touches the robot;
+the student does, and the mentoring happens in that doing.
+
 ## Why it's built this way (the "4D" idea)
 The tool follows a simple four-part coaching method. You'll see these words in the app:
 - **Delegation** — the tool suggests the test; the *student* does it. The tool never claims

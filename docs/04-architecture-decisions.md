@@ -34,6 +34,18 @@ file (fine under `tsx`; the function itself has no relative imports).
 **Context.** Vercel does not run a long-lived Express server; the proxy exists solely so
 `npm run dev` works offline.
 
+## ADR-007: Delegation split panel + action checklist are UI-only
+**Decision.** The "Claude suggests / You do this" split panel and the tappable
+student action checklist render **entirely in the React UI** from the existing
+`plainSteps` + `verifyFirst` fields. No new backend route, no change to the
+`DiagnoseResult` contract. Checklist state persists in `localStorage` (`botmentor:checklist`).
+**Context.** ADR-006 closed the prod/health parity gap; this makes the 4D
+*Delegation* competency tangible — the single most important fellowship signal.
+Keeping it in the UI means the keyless eval (ADR-005/006) still covers the whole
+contract, and the serverless function stays self-contained (ADR-001).
+**Consequence.** A host-org lead can *see* the AI-vs-student boundary without
+an engineer; student progress now survives reload. The mentoring loop is legible.
+
 ## ADR-006: Production `/api/health` parity + keyless eval harness
 **Decision.** A real `api/health.ts` serverless function mirrors the local proxy's
 `/api/health` shape (provider, keyConfigured, domains, framework, dTags). A separate
