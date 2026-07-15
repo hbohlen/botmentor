@@ -20,6 +20,7 @@ import { RefLibrary } from './components/RefLibrary';
 import { TeamSelector } from './components/TeamSelector';
 import { ImpactPanel } from './components/ImpactPanel';
 import type { DiagnoseResult } from './types';
+import { projectBoundary } from './lib/project-boundaries';
 
 type Tab = 'diagnose' | 'learn' | 'mentor';
 
@@ -121,6 +122,20 @@ export function App() {
           <button aria-current={tab === 'mentor' ? 'page' : undefined} className={tab === 'mentor' ? 'tab active' : 'tab'} onClick={() => setTab('mentor')}>For mentors</button>
         </nav>
       </header>
+
+      <aside className="prototype-note" aria-labelledby="prototype-title">
+        <div>
+          <p className="eyebrow">{projectBoundary.label}</p>
+          <h2 id="prototype-title">A concept for stronger volunteer mentoring</h2>
+          <p>{projectBoundary.summary}</p>
+        </div>
+        <details>
+          <summary>What this demo does—and does not—claim</summary>
+          <ul>
+            {projectBoundary.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}
+          </ul>
+        </details>
+      </aside>
 
       {tab === 'diagnose' ? (
         <>

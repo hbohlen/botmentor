@@ -243,6 +243,13 @@ body { background: linear-gradient(180deg, #eaf4ff 0, var(--bg) 280px); font-siz
 .tabs { border-top: 1px solid #e2eaf3; margin-top: 16px; padding-top: 12px; }
 .tab { background: transparent; border: 1px solid transparent; color: #43556d; min-height: 44px; }
 .tab.active { background: var(--accent-soft); border-color: #9fc5f5; color: #0b4fa8; }
+.prototype-note { align-items: start; background: #fffaf0; border: 1px solid #edce88; border-left: 5px solid #d89019; border-radius: 18px; display: grid; gap: 16px; grid-template-columns: minmax(0, 1.25fr) minmax(240px, .75fr); margin-top: 20px; padding: 18px 20px; }
+.prototype-note h2 { color: #513807; font-size: 20px; margin: 5px 0 7px; }
+.prototype-note p:not(.eyebrow) { color: #5d4a24; line-height: 1.55; margin: 0; }
+.prototype-note details { border: 1px solid #ecd59f; border-radius: 12px; padding: 10px 12px; }
+.prototype-note summary { color: #624809; cursor: pointer; font-weight: 800; }
+.prototype-note ul { color: #5d4a24; line-height: 1.5; margin: 10px 0 0; padding-left: 20px; }
+.prototype-note li + li { margin-top: 6px; }
 button { min-height: 46px; padding: 10px 16px; }
 button:focus-visible, summary:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid #ffb000; outline-offset: 3px; }
 
@@ -343,4 +350,5 @@ button:focus-visible, summary:focus-visible, input:focus-visible, textarea:focus
   .robot-map, .guided-card, .next-test, .mentor-center { border-radius: 18px; padding: 19px 16px; }
   .guided-actions { align-items: stretch; flex-direction: column-reverse; }
   .guided-actions button { width: 100%; }
+  .prototype-note { grid-template-columns: 1fr; padding: 17px; }
 }
