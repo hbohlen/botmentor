@@ -22,6 +22,12 @@ quality" meter fills in and lists one or two concrete tips ("name the part or be
 "add what changed since it last worked"). The better they describe it, the better the
 mentor ideas get — and that is a skill they take to the real expo floor.
 
+**And it trains Discernment.** Every mentor idea shows a confidence bar (how likely the
+cause is) and a "🔍 Challenge the mentor" button. Tapping it gives a structured
+self-critique — what test would *confirm* it, what would *disprove* it, what other
+fault could look the same, and a question to take to a human mentor. The tool never
+just says "do this"; it teaches the student to judge the answer.
+
 ## Why it's built this way (the "4D" idea)
 The tool follows a simple four-part coaching method. You'll see these words in the app:
 - **Delegation** — the tool suggests the test; the *student* does it. The tool never claims

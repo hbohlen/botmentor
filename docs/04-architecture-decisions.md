@@ -56,6 +56,18 @@ it a *live* coaching signal turns the static intake into real-time Description p
 **Consequence.** Zero cost, works in `mock` mode (no key), and invisible to the
 eval contract (which only inspects diagnose output). Keeps the function self-contained.
 
+## ADR-009: Discernment — confidence bar + client-side "Challenge" panel
+**Decision.** Each hypothesis shows a `ConfidenceBar` (visual % of `confidence`)
+and a "🔍 Challenge the mentor" toggle that reveals a `CritiquePanel`: per-area
+*confirm/disprove* tests, an alternate-cause nudge, and a ready-to-ask mentor
+question. All derived in the browser from the existing `Hypothesis` fields.
+**Context.** The Skilljar Discernment skill is "critically evaluate AI output" —
+not passively accept it. A visual confidence ladder + structured self-critique
+makes that a *repeatable practice*, and the mentor-question hands the loop back to
+a human (ADR-002 human-in-the-loop).
+**Consequence.** No extra API call, keyless, contract-safe (diagnose output unchanged).
+The "Did this work?" feedback already persists; closing the adaptive loop is ADR-010.
+
 ## ADR-006: Production `/api/health` parity + keyless eval harness
 **Decision.** A real `api/health.ts` serverless function mirrors the local proxy's
 `/api/health` shape (provider, keyConfigured, domains, framework, dTags). A separate

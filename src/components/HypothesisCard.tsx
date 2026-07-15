@@ -2,6 +2,8 @@ import { useState } from 'react';
 import type { Hypothesis } from '../types';
 import { recordFeedback } from '../lib/storage';
 import { ActionChecklist } from './ActionChecklist';
+import { ConfidenceBar } from './ConfidenceBar';
+import { CritiquePanel } from './CritiquePanel';
 
 export function HypothesisCard({
   hypothesis,
@@ -15,14 +17,13 @@ export function HypothesisCard({
   onChecklist: (next: boolean[]) => void;
 }) {
   const [feedback, setFeedback] = useState<'yes' | 'no' | 'partial' | null>(null);
+  const [challenge, setChallenge] = useState(false);
   const id = `${hypothesis.area}-${rank}`;
 
   function choose(v: 'yes' | 'no' | 'partial') {
     setFeedback(v);
     recordFeedback({ hypothesisId: id, area: hypothesis.area, worked: v });
   }
-
-  const pct = Math.round((hypothesis.confidence ?? 0) * 100);
 
   return (
     <li className="hyp">
@@ -31,7 +32,7 @@ export function HypothesisCard({
         <span className="rank">#{rank}</span>
         <span className="area">{hypothesis.area}</span>
         <span className="title">{hypothesis.title}</span>
-        <span className="conf">~{pct}% likely</span>
+        <ConfidenceBar value={Math.round((hypothesis.confidence ?? 0) * 100)} />
       </div>
       <ActionChecklist
         hypothesisId={id}
@@ -40,12 +41,16 @@ export function HypothesisCard({
         checklist={checklist}
         onChange={onChecklist}
       />
-      {hypothesis.whyRanked && (
+      <div className="discern">
         <details className="why">
           <summary>Why this is ranked here</summary>
           <p>{hypothesis.whyRanked}</p>
         </details>
-      )}
+        <button className="challenge" onClick={() => setChallenge((c) => !c)}>
+          {challenge ? 'Hide challenge' : '🔍 Challenge the mentor'}
+        </button>
+        {challenge && <CritiquePanel hypothesis={hypothesis} />}
+      </div>
       <div className="feedback">
         <span>Did this work?</span>
         {(['yes', 'no', 'partial'] as const).map((v) => (
