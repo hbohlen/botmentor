@@ -55,6 +55,11 @@ relative imports. Vercel's bundler drops them (Runbook R5). If you need shared c
    `api/<mode>.ts` copying the structure of `api/diagnose.ts`; add a tab in the UI.
 2. **A knowledge base** (RAG) of past Expo fixes. Store Q&A as markdown/JSON, embed at request
    time, inject into `SYSTEM_PROMPT`. No vector DB required to start — a static JSON file works.
+   **Shipped (2026-07-15, ADR-011):** the mock reference library `src/refs.ts` (15 entries
+   across all fault areas: wiring diagrams, datasheets, code snippets) + 📚 chips, a doc
+   drawer, and a "📚 References" browse tab. Hypotheses cite refs by ID; the AI tours
+   the student to the robot's own docs instead of ending at the answer. Swap `src/refs.ts`
+   for a team's real build docs to make it per-team.
 3. **An eval harness** — now shipped as `evals/run.ts` (`npm run eval`). It runs the
    `mock` engine against fixed robotics fixtures and asserts the 4D mentoring contract
    (valid JSON, in-taxonomy hypotheses, `verifyFirst` present, 4D tags present) with

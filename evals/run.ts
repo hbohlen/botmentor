@@ -68,6 +68,21 @@ function assertContract(fixture: EvalFixture, result: DiagnoseResult): Check[] {
       : err(`missing required 4D tags; got [${result.dTags?.join(', ') ?? ''}]`)
   );
 
+  // 5. mock attaches area-matched reference IDs (Cited-References, ADR-011)
+  const refH = result.hypotheses.find(
+    (h) => Array.isArray(h.refs) && h.refs.length > 0
+  );
+  if (refH) {
+    const valid = refH.refs!.every((id: string) => typeof id === 'string' && id.startsWith('ref-'));
+    checks.push(
+      valid
+        ? { fixture: fixture.name, ok: true, detail: `refs cited on ${String(refH.area)} hypothesis` }
+        : err(`refs present but malformed: ${JSON.stringify(refH.refs)}`)
+    );
+  } else {
+    checks.push(err('no hypothesis cited any reference (refs missing from mock)'));
+  }
+
   return checks;
 }
 

@@ -3,9 +3,13 @@ import { Intake } from './components/Intake';
 import { Results } from './components/Results';
 import { HealthPill } from './components/HealthPill';
 import { DTagLegend } from './components/DTagLegend';
+import { RefLibrary } from './components/RefLibrary';
 import type { DiagnoseResult } from './types';
 
+type Tab = 'diagnose' | 'references';
+
 export function App() {
+  const [tab, setTab] = useState<Tab>('diagnose');
   const [result, setResult] = useState<DiagnoseResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,10 +45,32 @@ export function App() {
           Framework. Rooted in the Nebraska Robotics Expo, where college engineering
           students coached K–12 teams through troubleshooting and robot-design improvement.
         </p>
+        <nav className="tabs">
+          <button
+            className={tab === 'diagnose' ? 'tab active' : 'tab'}
+            onClick={() => setTab('diagnose')}
+          >
+            Diagnose
+          </button>
+          <button
+            className={tab === 'references' ? 'tab active' : 'tab'}
+            onClick={() => setTab('references')}
+          >
+            📚 References
+          </button>
+        </nav>
       </header>
-      <Intake onSubmit={diagnose} loading={loading} />
-      {error && <p className="error">⚠ {error}</p>}
-      {result && <Results result={result} />}
+
+      {tab === 'diagnose' ? (
+        <>
+          <Intake onSubmit={diagnose} loading={loading} />
+          {error && <p className="error">⚠ {error}</p>}
+          {result && <Results result={result} />}
+        </>
+      ) : (
+        <RefLibrary />
+      )}
+
       <DTagLegend />
     </main>
   );

@@ -81,6 +81,20 @@ re-engages the iterate-verify loop — exactly the expo-mentor behavior.
 (Q5); a host org could later back it with a shared store to compare cohorts.
 All four 4D competencies now have a dedicated interactive component.
 
+## ADR-011: Cited-References — AI tours the student to the robot's own docs
+**Decision.** Hypotheses carry an optional `refs?: string[]` of reference IDs. The UI
+renders 📚 chips per hypothesis (HypothesisCard → RefChip) and a "📚 References"
+browse tab (RefLibrary) — both open a side `RefDrawer` with the doc body + code
+snippet, client-side from `src/refs.ts` (the mock library). The mock engine attaches
+area-matched `refIdsForArea(area)`; live providers get `REF_LIST` in-prompt to cite real IDs.
+**Context.** The goal: the AI answer should *lead the student to the documentation/notes*
+for their issue, so they learn and troubleshoot further — not stop at "do this." That is
+Discernment as verification against an authority, and Diligence as studying the root cause.
+**Consequence.** Self-contained fn preserved (ADR-001): `api/diagnose.ts` only holds a
+tiny `REF_INDEX` of id/title/area; full bodies stay client-side. Keyless + contract-safe
+(eval gained a refs assertion; mock still passes all 4D checks). A host org swaps
+`src/refs.ts` for their team's real docs (per-team variant = V2).
+
 ## ADR-006: Production `/api/health` parity + keyless eval harness
 **Decision.** A real `api/health.ts` serverless function mirrors the local proxy's
 `/api/health` shape (provider, keyConfigured, domains, framework, dTags). A separate

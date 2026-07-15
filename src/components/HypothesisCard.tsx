@@ -4,17 +4,20 @@ import { recordFeedback } from '../lib/storage';
 import { ActionChecklist } from './ActionChecklist';
 import { ConfidenceBar } from './ConfidenceBar';
 import { CritiquePanel } from './CritiquePanel';
+import { RefChip } from './RefChip';
 
 export function HypothesisCard({
   hypothesis,
   rank,
   checklist,
   onChecklist,
+  onOpenRef,
 }: {
   hypothesis: Hypothesis;
   rank: number;
   checklist: boolean[];
   onChecklist: (next: boolean[]) => void;
+  onOpenRef: (id: string) => void;
 }) {
   const [feedback, setFeedback] = useState<'yes' | 'no' | 'partial' | null>(null);
   const [challenge, setChallenge] = useState(false);
@@ -41,6 +44,18 @@ export function HypothesisCard({
         checklist={checklist}
         onChange={onChecklist}
       />
+      {hypothesis.refs && hypothesis.refs.length > 0 && (
+        <div className="ref-chips">
+          <span className="ref-label">📚 References:</span>
+          {hypothesis.refs.map((rid) => (
+            <RefChip
+              key={rid}
+              title={rid.replace(/^ref-/, '').replace(/-/g, ' ')}
+              onClick={() => onOpenRef(rid)}
+            />
+          ))}
+        </div>
+      )}
       <div className="discern">
         <details className="why">
           <summary>Why this is ranked here</summary>

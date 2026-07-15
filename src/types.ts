@@ -12,6 +12,16 @@ export type FaultArea =
 
 export type DTag = 'Delegation' | 'Description' | 'Discernment' | 'Diligence';
 
+export interface Ref {
+  id: string;
+  title: string;
+  area: string;
+  tags: string[];
+  summary: string;
+  body: string;
+  snippet?: string;
+}
+
 export interface Hypothesis {
   area: FaultArea;
   title: string;
@@ -19,6 +29,7 @@ export interface Hypothesis {
   confidence: number;
   verifyFirst: boolean;
   whyRanked: string;
+  refs?: string[];
 }
 
 export interface DiagnoseResult {

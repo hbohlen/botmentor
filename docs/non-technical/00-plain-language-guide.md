@@ -33,6 +33,11 @@ visible "Your fixes" log — which areas worked, which didn't — plus an adapti
 at the top reminding the student where they got stuck last time. Verify before you swap
 parts; the loop is the lesson.
 
+**And it points to the docs.** Every mentor idea carries 📚 reference chips the student
+can open to read the robot's own wiring diagrams, datasheets, and code snippets for that
+fault. There's also a "📚 References" tab to browse the whole library before they're
+stuck — so the tool teaches from the team's real documentation, not just from the answer.
+
 ## Why it's built this way (the "4D" idea)
 The tool follows a simple four-part coaching method. You'll see these words in the app:
 - **Delegation** — the tool suggests the test; the *student* does it. The tool never claims
