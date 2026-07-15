@@ -68,6 +68,19 @@ a human (ADR-002 human-in-the-loop).
 **Consequence.** No extra API call, keyless, contract-safe (diagnose output unchanged).
 The "Did this work?" feedback already persists; closing the adaptive loop is ADR-010.
 
+## ADR-010: Diligence — visible "Your fixes" log + adaptive nudge (client-only)
+**Decision.** A `FixesLog` (collapsible, per-area success bars over logged marks) and
+an `AdaptiveNudge` (client-derived low-success-area tip shown at intake) make the
+Diligence loop *legible*. Both read `localStorage` only — no backend, no
+`DiagnoseResult` change.
+**Context.** Diligence is "iterate responsibly, verify before swapping parts"
+(fellowship Safety & Ethics). The "Did this work?" marks (ADR-007) were persisted
+but unused. Exposing them turns invisible logging into a visible learning record and
+re-engages the iterate-verify loop — exactly the expo-mentor behavior.
+**Consequence.** Keyless, contract-safe (eval unaffected). Browser-scoped by design
+(Q5); a host org could later back it with a shared store to compare cohorts.
+All four 4D competencies now have a dedicated interactive component.
+
 ## ADR-006: Production `/api/health` parity + keyless eval harness
 **Decision.** A real `api/health.ts` serverless function mirrors the local proxy's
 `/api/health` shape (provider, keyConfigured, domains, framework, dTags). A separate

@@ -28,6 +28,11 @@ self-critique — what test would *confirm* it, what would *disprove* it, what o
 fault could look the same, and a question to take to a human mentor. The tool never
 just says "do this"; it teaches the student to judge the answer.
 
+**And it practices Diligence.** Every idea has a "Did this work?" mark that builds a
+visible "Your fixes" log — which areas worked, which didn't — plus an adaptive nudge
+at the top reminding the student where they got stuck last time. Verify before you swap
+parts; the loop is the lesson.
+
 ## Why it's built this way (the "4D" idea)
 The tool follows a simple four-part coaching method. You'll see these words in the app:
 - **Delegation** — the tool suggests the test; the *student* does it. The tool never claims

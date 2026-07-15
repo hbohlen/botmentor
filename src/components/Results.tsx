@@ -3,6 +3,7 @@ import type { DiagnoseResult } from '../types';
 import { DTagChips } from './DTagChips';
 import { HypothesisCard } from './HypothesisCard';
 import { DelegationPanel } from './DelegationPanel';
+import { FixesLog } from './FixesLog';
 import { getChecklist, setChecklist } from '../lib/storage';
 
 export function Results({ result }: { result: DiagnoseResult }) {
@@ -59,6 +60,7 @@ export function Results({ result }: { result: DiagnoseResult }) {
           );
         })}
       </ol>
+      <FixesLog />
     </section>
   );
 }

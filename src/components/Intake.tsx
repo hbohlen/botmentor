@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { DescriptionMeter } from './DescriptionMeter';
+import { AdaptiveNudge } from './AdaptiveNudge';
 
 interface IntakeProps {
   onSubmit: (input: string) => void;
@@ -27,6 +28,7 @@ export function Intake({ onSubmit, loading }: IntakeProps) {
 
   return (
     <form className="intake" onSubmit={submit}>
+      <AdaptiveNudge />
       <DescriptionMeter symptom={symptom} changed={changed} expected={expected} />
       <label>
         What is your robot doing? (symptom)
