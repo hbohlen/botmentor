@@ -81,6 +81,19 @@ re-engages the iterate-verify loop — exactly the expo-mentor behavior.
 (Q5); a host org could later back it with a shared store to compare cohorts.
 All four 4D competencies now have a dedicated interactive component.
 
+## ADR-012: "Why this ref" provenance — the citation is checkable
+**Decision.** When a student opens a reference from a hypothesis chip, the `RefDrawer`
+shows a "Why you're seeing this" block: which hypothesis cited it (rank + area + title)
+and that hypothesis's `whyRanked` reasoning. `RefProvenance` is threaded HypothesisCard →
+Results → RefDrawer; it is optional, so library-tab (browse) opens show the doc with no
+provenance banner.
+**Context.** A bare citation asks for trust. Showing *why* the AI cited a doc turns the
+reference into an auditable claim — the student can judge whether the reason fits the
+symptom before believing the doc. Discernment made auditable; ADR-011's tour gains a "why."
+**Consequence.** Pure UI (no contract/eval change): provenance is derived client-side from
+data already in `DiagnoseResult`. Optional prop keeps the browse path clean. Build +
+typecheck + eval unchanged (20/20).
+
 ## ADR-011: Cited-References — AI tours the student to the robot's own docs
 **Decision.** Hypotheses carry an optional `refs?: string[]` of reference IDs. The UI
 renders 📚 chips per hypothesis (HypothesisCard → RefChip) and a "📚 References"

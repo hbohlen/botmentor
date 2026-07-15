@@ -5,6 +5,7 @@ import { ActionChecklist } from './ActionChecklist';
 import { ConfidenceBar } from './ConfidenceBar';
 import { CritiquePanel } from './CritiquePanel';
 import { RefChip } from './RefChip';
+import type { RefProvenance } from './RefDrawer';
 
 export function HypothesisCard({
   hypothesis,
@@ -17,11 +18,17 @@ export function HypothesisCard({
   rank: number;
   checklist: boolean[];
   onChecklist: (next: boolean[]) => void;
-  onOpenRef: (id: string) => void;
+  onOpenRef: (id: string, provenance: RefProvenance) => void;
 }) {
   const [feedback, setFeedback] = useState<'yes' | 'no' | 'partial' | null>(null);
   const [challenge, setChallenge] = useState(false);
   const id = `${hypothesis.area}-${rank}`;
+  const provenance: RefProvenance = {
+    rank,
+    area: hypothesis.area,
+    title: hypothesis.title,
+    whyRanked: hypothesis.whyRanked,
+  };
 
   function choose(v: 'yes' | 'no' | 'partial') {
     setFeedback(v);
@@ -51,7 +58,7 @@ export function HypothesisCard({
             <RefChip
               key={rid}
               title={rid.replace(/^ref-/, '').replace(/-/g, ' ')}
-              onClick={() => onOpenRef(rid)}
+              onClick={() => onOpenRef(rid, provenance)}
             />
           ))}
         </div>

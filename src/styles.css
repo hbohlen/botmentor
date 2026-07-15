@@ -129,6 +129,10 @@ button:disabled { opacity: 0.6; cursor: default; }
 .drawer-area { text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; background: #334155; padding: 2px 6px; border-radius: 6px; color: var(--muted); }
 .drawer-close { background: transparent; color: var(--muted); font-size: 18px; }
 .drawer-title { margin: 8px 0 4px; font-size: 18px; }
+.drawer-prov { background: #0b1220; border: 1px solid #1e3a5e; border-left: 3px solid var(--accent); border-radius: 8px; padding: 8px 12px; margin: 8px 0 10px; }
+.drawer-prov-tag { display: block; text-transform: uppercase; font-size: 10px; letter-spacing: 0.05em; color: var(--accent); margin-bottom: 4px; }
+.drawer-prov p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--ink); }
+.drawer-prov em { color: #7dd3fc; font-style: normal; }
 .drawer-summary { color: var(--muted); font-size: 14px; margin: 0 0 10px; }
 .drawer-body { font-size: 14px; line-height: 1.55; white-space: pre-wrap; }
 .drawer-snippet { background: #0b1220; border: 1px solid #1e3a5e; border-radius: 8px; padding: 10px 12px; margin-top: 12px; font-size: 12px; overflow-x: auto; color: #cbd5e1; }

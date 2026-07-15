@@ -4,7 +4,7 @@ import { DTagChips } from './DTagChips';
 import { HypothesisCard } from './HypothesisCard';
 import { DelegationPanel } from './DelegationPanel';
 import { FixesLog } from './FixesLog';
-import { RefDrawer } from './RefDrawer';
+import { RefDrawer, type RefProvenance } from './RefDrawer';
 import { getChecklist, setChecklist } from '../lib/storage';
 
 export function Results({ result }: { result: DiagnoseResult }) {
@@ -19,6 +19,12 @@ export function Results({ result }: { result: DiagnoseResult }) {
     return init;
   });
   const [openRef, setOpenRef] = useState<string | null>(null);
+  const [openProv, setOpenProv] = useState<RefProvenance | null>(null);
+
+  function openRefWith(id: string, prov: RefProvenance) {
+    setOpenRef(id);
+    setOpenProv(prov);
+  }
 
   // Persist every checklist change (single source of truth for storage).
   useEffect(() => {
@@ -58,13 +64,13 @@ export function Results({ result }: { result: DiagnoseResult }) {
               rank={i + 1}
               checklist={checklists[id]}
               onChecklist={(next) => onChecklist(id, next)}
-              onOpenRef={setOpenRef}
+              onOpenRef={openRefWith}
             />
           );
         })}
       </ol>
       <FixesLog />
-      <RefDrawer refId={openRef} onClose={() => setOpenRef(null)} />
+      <RefDrawer refId={openRef} provenance={openProv} onClose={() => setOpenRef(null)} />
     </section>
   );
 }

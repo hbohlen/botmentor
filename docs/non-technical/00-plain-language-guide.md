@@ -37,6 +37,8 @@ parts; the loop is the lesson.
 can open to read the robot's own wiring diagrams, datasheets, and code snippets for that
 fault. There's also a "📚 References" tab to browse the whole library before they're
 stuck — so the tool teaches from the team's real documentation, not just from the answer.
+When you open a reference from a mentor idea, it tells you *why* it was cited (which idea,
+and the reason it's ranked there) — so you can check the citation, not just trust it.
 
 ## Why it's built this way (the "4D" idea)
 The tool follows a simple four-part coaching method. You'll see these words in the app:
